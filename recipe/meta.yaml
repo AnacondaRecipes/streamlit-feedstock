@@ -21,7 +21,6 @@ requirements:
   host:
     - pip
     - python
-    - pipenv 2022.7.4
     - wheel
     - setuptools
   run:
