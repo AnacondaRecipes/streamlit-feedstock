@@ -10,10 +10,10 @@ source:
   sha256: 90333915d9df8ce3b06de31b8a5bbab51e8cf0982dc6c32da9d6b1f2b4a9fa78
 
 build:
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
-    - streamlit = streamlit.cli:main
+    - streamlit = streamlit.web.cli:main
   skip: true  # [s390x or py<38]
 
 requirements:
@@ -55,6 +55,7 @@ test:
     - pip
   commands:
     - pip check
+    - streamlit --help
 
 about:
   home: https://streamlit.io
