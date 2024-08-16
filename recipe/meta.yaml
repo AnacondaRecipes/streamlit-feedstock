@@ -14,16 +14,16 @@ build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   entry_points:
     - streamlit = streamlit.web.cli:main
-  skip: true  # [s390x or py<38]
+  skip: true  # [s390x or py<=38]
 
 requirements:
   host:
     - pip
-    - python
+    - python !=3.9.7
     - wheel
     - setuptools
   run:
-    - python
+    - python !=3.9.7
     - altair >=4.0,<6
     - blinker >=1.0.0,<2
     - cachetools >=4.0,<6
