@@ -1,3 +1,5 @@
 channels:
-- psteyer
+    psteyer: psteyer-tests
 upload_without_merge: True
+
+
