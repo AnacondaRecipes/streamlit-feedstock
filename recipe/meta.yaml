@@ -65,7 +65,7 @@ about:
   home: https://streamlit.io
   license: Apache-2.0
   license_family: APACHE
-  license_url: https://github.com/streamlit/streamlit/blob/1.26.1/LICENSE
+  license_file: LICENSE
   summary: The fastest way to build data apps in Python
   description: |
     Streamlit lets you turn data scripts into sharable web apps in minutes, not weeks.
