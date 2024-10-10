@@ -44,7 +44,6 @@ requirements:
     - pydeck >=0.8.0,<1
     - tornado >=6.0.3,<7
     - importlib-metadata >=1.4,<8
-    - pydeck >=0.8.0b4,<1
     - python-dateutil >=2.7.3,<3
     - typing-extensions >=4.3.0,<5
     - tzlocal >=1.1,<6
