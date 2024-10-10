@@ -43,7 +43,6 @@ requirements:
     - gitpython >=3.0.7,<4,!=3.1.19
     - pydeck >=0.8.0,<1
     - tornado >=6.0.3,<7
-    - importlib-metadata >=1.4,<8 # Imported by some files in upstream
   run_constrained:
     - snowflake-snowpark-python >=1.17.0  # [py<312]
     - snowflake-connector-python >=2.8.0  # [py<312]
