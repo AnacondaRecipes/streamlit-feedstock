@@ -42,13 +42,14 @@ requirements:
     - typing_extensions >=4.3.0,<5
     - tzlocal >=1.1,<6
     - validators >=0.2,<1
+    # Upper bound on watchdog from later versions
     - watchdog >=2.1.5,<5  # [not osx]
     - gitpython >=3.0.7,<4,!=3.1.19
     - pydeck >=0.8.0,<1
     - tornado >=6.0.3,<7
   run_constrained:
-    - snowflake-snowpark-python >=1.17.0  # [py<312]
-    - snowflake-connector-python >=2.8.0  # [py<312]
+    - snowflake-snowpark-python >=1.17.0  # [py==38]
+    - snowflake-connector-python >=2.8.0  # [py==38]
     - python !=3.9.7
 
 test:
