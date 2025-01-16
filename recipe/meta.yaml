@@ -46,6 +46,7 @@ requirements:
     - typing-extensions >=4.3.0,<5
   run_constrained:
     - snowflake-snowpark-python >=1.17.0  # [py<312]
+    - snowflake-connector-python >=2.8.0  # [py<312]
     - python !=3.9.7
 
 test:
