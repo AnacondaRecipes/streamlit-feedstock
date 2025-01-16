@@ -43,7 +43,6 @@ requirements:
     - gitpython >=3.0.7,<4,!=3.1.19
     - pydeck >=0.8.0b4,<1
     - tornado >=6.0.3,<7
-    - typing-extensions >=4.3.0,<5
   run_constrained:
     - snowflake-snowpark-python >=1.17.0  # [py<312]
     - snowflake-connector-python >=2.8.0  # [py<312]
