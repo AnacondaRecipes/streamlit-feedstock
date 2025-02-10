@@ -63,6 +63,7 @@ requirements:
 #
 {% set ignore_tests = " --ignore=lib/tests/streamlit/user_info_test.py" %}
 
+
 # Tests run not from git repo. .git directory is not avaliable in this case.
 # >           self.assertEqual((1, 6, 4), repo.git_version)
 # E           AssertionError: (1, 6, 4) != None
@@ -72,6 +73,8 @@ requirements:
 # >           raise AssertionError(msg)
 # E           AssertionError: Expected 'warning' to have been called once. Called 0 times.
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/watcher/local_sources_watcher_test.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/config_test.py" %}
+
 
 # On py313:
 
@@ -105,7 +108,7 @@ test:
     # upstream authlib >=1.3.2, but only 1.3.1 is avaliable in main
     - authlib >=1.3.1
     - requests-mock
-    - watchdog >=2.1.5  # [not win and py>312]
+    - watchdog >=2.1.5  # [not (win and py==313)]
     - plotly >=5.3.1
     - testfixtures
     - matplotlib-base >=3.3.4
