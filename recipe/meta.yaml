@@ -1,20 +1,26 @@
 {% set name = "streamlit" %}
-{% set version = "1.41.1" %}
+{% set version = "1.42.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 6626d32b098ba1458b71eebdd634c62af2dd876380e59c4b6a1e828a39d62d69
+  #url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  #sha256: 8c48494ccfad33e7d0bc5873151800b203cb71203bfd42bc7418940710ca4970
+  url: https://github.com/streamlit/streamlit/archive/{{ version }}.tar.gz
+  sha256: d13d8ed5f0b8b429febe0868619d7b42298e7badba266ee7fa73823039ce7de8
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script: |
+    protoc --proto_path=proto --python_out=lib proto/streamlit/proto/*.proto
+    {{ PYTHON }} -m pip install ./lib -vv --no-deps --no-build-isolation
   entry_points:
     - streamlit = streamlit.web.cli:main
-  skip: true  # [s390x or py<38]
+  # https://github.com/streamlit/streamlit/blob/1.42.0/lib/setup.py#L143
+  # python_requires=">=3.9, !=3.9.7"
+  skip: true  # [s390x or py<39]
 
 requirements:
   host:
@@ -38,24 +44,68 @@ requirements:
     - rich >=10.14.0,<14
     - tenacity >=8.1.0,<10
     - toml >=0.10.1,<2
-    - typing_extensions >=4.3.0,<5
+    - typing_extensions >=4.4.0,<5
     - watchdog >=2.1.5,<7  # [not osx]
     - gitpython >=3.0.7,<4,!=3.1.19
     - pydeck >=0.8.0b4,<1
     - tornado >=6.0.3,<7
   run_constrained:
     - snowflake-snowpark-python >=1.17.0  # [py<312]
-    - snowflake-connector-python >=2.8.0  # [py<312]
+    - snowflake-connector-python >=3.3.0  # [py<312]
     - python !=3.9.7
 
+# Need authentcation credentials to the microsoft account.
+# >           assert """Authentication credentials in `.streamlit/secrets.toml` are missing the
+#             "redirect_uri" key. Please check your configuration.""" == str(ex.exception)
+# E           assert 'Authenticati...onfiguration.' == 'To use authe...all Authlib`.'
+# E             
+# E             + Authentication credentials in `.streamlit/secrets.toml` are missing the
+# E             +             "redirect_uri" key. Please check your configuration.
+#
+{% set ignore_tests = " --ignore=lib/tests/streamlit/user_info_test.py" %}
+
+# Tests run not from git repo. .git directory is not avaliable in this case.
+# >           self.assertEqual((1, 6, 4), repo.git_version)
+# E           AssertionError: (1, 6, 4) != None
+{% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/git_util_test.py" %}
+
+#             mock_logger.warning.assert_called_once()
+# >           raise AssertionError(msg)
+# E           AssertionError: Expected 'warning' to have been called once. Called 0 times.
+{% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/watcher/local_sources_watcher_test.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/config_test.py" %}
+
+# On py313
+# No module named plotly
+# No module named python-graphviz
+
+
 test:
+  source_files:
+    - lib/tests
+    - lib/setup.py
   imports:
     - streamlit
-  requires:
-    - pip
   commands:
     - pip check
     - streamlit --help
+    
+    - pytest -v {{ ignore_tests }} lib/tests
+  requires:
+    - pip
+    - pytest
+    - parameterized 
+    # upstream authlib >=1.3.2, but only 1.3.1 is avaliable in main
+    - authlib >=1.3.1
+    - requests-mock
+    - watchdog >=2.1.5
+    - plotly >=5.3.1
+    - testfixtures
+    - matplotlib-base >=3.3.4
+    - hypothesis >=6.17.4
+    - python-graphviz >=0.17
+    # upstream pytest-benchmark==5.1.0, butonly 4.0.0 is avaliable in main
+    - pytest-benchmark >=4.0.0
 
 about:
   home: https://streamlit.io
