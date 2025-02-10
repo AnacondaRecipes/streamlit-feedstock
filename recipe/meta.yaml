@@ -103,7 +103,7 @@ test:
     - testfixtures
     - matplotlib-base >=3.3.4
     - hypothesis >=6.17.4
-    - python-graphviz >=0.17
+    - python-graphviz >=0.17  # [py<313]
     # upstream pytest-benchmark==5.1.0, butonly 4.0.0 is avaliable in main
     - pytest-benchmark >=4.0.0
 
