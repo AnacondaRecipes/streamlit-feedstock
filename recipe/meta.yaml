@@ -23,6 +23,8 @@ build:
   skip: true  # [s390x or py<39]
 
 requirements:
+  build:
+    - protobuf >=3.20,<6
   host:
     - pip
     - python
@@ -78,6 +80,7 @@ requirements:
 # On py313
 # No module named plotly
 # No module named python-graphviz
+#{% set tests_to_skip = tests_to_skip + " or test_generic_options" %}
 
 
 test:
