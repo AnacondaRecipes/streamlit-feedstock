@@ -10,17 +10,27 @@ source:
   #sha256: 8c48494ccfad33e7d0bc5873151800b203cb71203bfd42bc7418940710ca4970
   url: https://github.com/streamlit/streamlit/archive/{{ version }}.tar.gz
   sha256: d13d8ed5f0b8b429febe0868619d7b42298e7badba266ee7fa73823039ce7de8
+  patches:
+    # UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 4540: character maps to <undefined>
+    # Need to add encoding='utf-8'
+    # long_description = readme_path.read_text() -> long_description = readme_path.read_text(encoding='utf-8')
+    - patches/0001-fix-win-encoding.patch
 
 build:
   number: 0
   entry_points:
     - streamlit = streamlit.web.cli:main
+  skip: True  # [py<39]
   # https://github.com/streamlit/streamlit/blob/1.42.0/lib/setup.py#L143
   # python_requires=">=3.9, !=3.9.7"
-  skip: true  # [s390x or py<39]
+  skip: True  # [s390x]
+  # Watchdog is not avaliable on win + py313
+  skip: True  # [win and py>312]
 
 requirements:
   build:
+    - patch  # [not win]
+    - m2-patch  # [win]
     - protobuf >=3.20,<6
   host:
     - pip
@@ -60,7 +70,6 @@ requirements:
 # E             
 # E             + Authentication credentials in `.streamlit/secrets.toml` are missing the
 # E             +             "redirect_uri" key. Please check your configuration.
-#
 {% set ignore_tests = " --ignore=lib/tests/streamlit/user_info_test.py" %}
 
 
@@ -76,7 +85,7 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/config_test.py" %}
 
 
-# On py313:
+# ++++++++++++ On py313 ++++++++++++++++:
 
 # E   AttributeError: module 'numpy' has no attribute 'bool8'. Did you mean: 'bool'?
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/delta_generator_test.py" %}  # [py>312]
@@ -88,8 +97,7 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/streamlit_test.py" %}  # [py>312]
 
 # E   ModuleNotFoundError: No module named python-graphviz
-{% set ignore_tests = ignore_tests + " --ignore=tests/streamlit/elements/graphviz_test.py" %}  # [py>312]
-
+{% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/elements/graphviz_test.py" %}  # [py>312]
 
 test:
   source_files:
@@ -108,7 +116,7 @@ test:
     # upstream authlib >=1.3.2, but only 1.3.1 is avaliable in main
     - authlib >=1.3.1
     - requests-mock
-    - watchdog >=2.1.5  # [not (win and py==313)]
+    - watchdog >=2.1.5
     - plotly >=5.3.1
     - testfixtures
     - matplotlib-base >=3.3.4
