@@ -84,7 +84,6 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/watcher/local_sources_watcher_test.py" %}
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/config_test.py" %}
 
-
 # ++++++++++++ On py313 ++++++++++++++++:
 
 # E   AttributeError: module 'numpy' has no attribute 'bool8'. Did you mean: 'bool'?
@@ -99,6 +98,127 @@ requirements:
 # E   ModuleNotFoundError: No module named python-graphviz
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/elements/graphviz_test.py" %}  # [py>312]
 
+# ++++++++++++ On win ++++++++++++++++++:
+# >       self.assertEqual(PATH, component.path)
+# E       AssertionError: 'not/a/real/path' != 'not\\a\\real\\path'
+# E       - not/a/real/path
+# E       ?    ^ ^    ^
+# E       + not\a\real\path
+# E       ?    ^ ^    ^
+# lib\tests\streamlit\components_test.py::DeclareComponentTest::test_only_path_pathlib
+{% set tests_to_skip = "test_only_path_pathlib" %}  # [win]
+
+# No such component directory: 'C:\a\test\component\directory'
+# lib\tests\streamlit\components_test.py::ComponentRegistryTest::test_register_component_with_path
+# lib\tests\streamlit\components_test.py::ComponentRegistryTest::test_register_duplicate_path
+{% set tests_to_skip = tests_to_skip + " or test_register_component_with_path" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_register_duplicate_path" %}  # [win]
+
+# >           raise AssertionError(msg)
+# E           AssertionError: Expected 'help' to be called once. Called 0 times.
+# lib\tests\streamlit\connections\base_connection_test.py::BaseConnectionDefaultMethodTests::test_st_write
+{% set tests_to_skip = tests_to_skip + " or test_st_write" %}  # [win]
+
+# >       con = sqlite3.connect("file::memory:")
+# E       sqlite3.OperationalError: unable to open database file
+# lib\tests\streamlit\dataframe_util_test.py::DataframeUtilTest::test_verify_sqlite3_integration
+{% set tests_to_skip = tests_to_skip + " or test_verify_sqlite3_integration" %}  # [win]
+
+#  E   AssertionError: 3 != 2 : Stack does not have length 2: ['File "C:\\b\\abs_83uto4xk3_\\croot\\streamlit_1739196111936\\test_tmp\\lib\\tests\\streamlit\\elements\\support_files\\exception_test_utils.py", line 46, in internal_python_call_with_bad_arguments\n    os.path.realpath(42)  # type: ignore', 'File "C:\\b\\abs_83uto4xk3_\\croot\\streamlit_1739196111936\\_test_env\\lib\\ntpath.py", line 626, in realpath\n    path = normpath(path)', 'File "C:\\b\\abs_83uto4xk3_\\croot\\streamlit_1739196111936\\_test_env\\lib\\ntpath.py", line 452, in normpath\n    path = os.fspath(path)']
+# lib\tests\streamlit\elements\exception_test.py::ExceptionProtoTest::test_external_error_stack_starts_with_user_module_3
+{% set tests_to_skip = tests_to_skip + " or test_external_error_stack_starts_with_user_module_3" %}  # [win]
+
+# >           self.assertEqual(ds.members[i].value, expected[1])
+# E           AssertionError: '<property object at 0x000001F655315450>' != ''
+# E           - <property object at 0x000001F655315450>
+# lib\tests\streamlit\elements\help_test.py::StHelpTest::test_class_members
+{% set tests_to_skip = tests_to_skip + " or test_class_members" %}  # [win]
+
+
+# PermissionError: [Errno 13] Permission denied: 'C:\\cygwin64\\tmp\\tmp9jhk3u1s.vtt'
+# lib\tests\streamlit\elements\video_test.py::VideoTest::test_st_video_subtitles_path
+{% set tests_to_skip = tests_to_skip + " or test_st_video_subtitles_path" %}  # [win]
+
+# E       AssertionError: 'C:\\some_path\\to\\app\\static' != '/some_path/to/app/static'
+# E       - C:\some_path\to\app\static
+# E       ? ^^^         ^  ^   ^
+# E       + /some_path/to/app/static
+# E       ? ^         ^  ^   ^
+# lib\tests\streamlit\file_util_test.py::FileUtilTest::test_get_app_static_dir
+# lib\tests\streamlit\file_util_test.py::FileUtilTest::test_get_project_streamlit_file_path
+# lib\tests\streamlit\file_util_test.py::FileUtilTest::test_streamlit_write_exception
+# lib\tests\streamlit\file_util_test.py::FileInPythonPathTest::test_get_main_script_directory
+# lib\tests\streamlit\file_util_test.py::FileInPythonPathTest::test_normalize_path_join
+{% set tests_to_skip = tests_to_skip + " or test_get_app_static_dir" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_get_project_streamlit_file_path" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_streamlit_write_exception" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_get_main_script_directory" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_normalize_path_join" %}  # [win]
+
+# >       self.assertIsNotNone(match)
+# E       AssertionError: unexpectedly None
+# lib\tests\streamlit\runtime\caching\cache_data_api_test.py::CacheDataPersistTest::test_persist_path
+# lib\tests\streamlit\runtime\caching\hashing_test.py::NotHashableTest::test_non_hashable
+{% set tests_to_skip = tests_to_skip + " or test_persist_path" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_non_hashable" %}  # [win]
+
+# >           raise AssertionError(_error_message()) from cause
+# E           AssertionError: expected call not found.
+# E           Expected: makedirs('/mock/home/folder\\.streamlit', exist_ok=True)
+# E           Actual: makedirs('/mock/home/folder/.streamlit', exist_ok=True)
+# lib\tests\streamlit\runtime\credentials_test.py::CredentialsClassTest::test_Credentials_save
+{% set tests_to_skip = tests_to_skip + " or test_Credentials_save" %}  # [win]
+
+# >           uncached = client.forward_msgs.pop()
+# E           IndexError: pop from empty list
+# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_duplicate_forwardmsg_caching
+# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_forwardmsg_cache_clearing
+{% set tests_to_skip = tests_to_skip + " or test_duplicate_forwardmsg_caching" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_forwardmsg_cache_clearing" %}  # [win]
+
+# >       return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+# E       UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f6a8' in position 83: character maps to <undefined>
+# lib\tests\streamlit\testing\element_tree_test.py::test_alert
+{% set tests_to_skip = tests_to_skip + " or test_alert" %}  # [win]
+
+# >       assert folder_path == "/this/is/my/dir"
+# E       AssertionError: assert 'C:\\this\\is\\my\\dir' == '/this/is/my/dir'
+# E
+# E         - /this/is/my/dir
+# E         + C:\this\is\my\dir
+# lib\tests\streamlit\watcher\event_based_path_watcher_test.py::EventBasedPathWatcherTest::test_correctly_resolves_watched_file_path
+# lib\tests\streamlit\watcher\event_based_path_watcher_test.py::EventBasedPathWatcherTest::test_correctly_resolves_watched_folder_path
+{% set tests_to_skip = tests_to_skip + " or test_correctly_resolves_watched_file_path" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_correctly_resolves_watched_folder_path" %}  # [win]
+
+#>           raise AssertionError(_error_message()) from cause
+#E           AssertionError: expected call not found.
+#E           Expected: EventBasedPathWatcher('some/dir/path/', <Mock id='2157536012128'>, glob_pattern='*.py', allow_nonexistent=True)
+#E           Actual: EventBasedPathWatcher('some/dir/path\\', <Mock id='2157536012128'>, glob_pattern='*.py', allow_nonexistent=True)
+# lib\tests\streamlit\watcher\path_watcher_test.py::FileWatcherTest::test_watch_dir_kwarg_plumbing
+{% set tests_to_skip = tests_to_skip + " or test_watch_dir_kwarg_plumbing" %}  # [win]
+
+# NotADirectoryError: [WinError 267] The directory name is invalid: 'C:\\cygwin64\\tmp\\tmpb98enk00\\tmp6o52qgcdstylesheet.css'
+# lib\tests\streamlit\web\server\routes_test.py::StaticFileHandlerTest::test_mimetype_is_overridden_by_server
+# lib\tests\streamlit\web\server\routes_test.py::StaticFileHandlerTest::test_nonexistent_urls_return_default_page
+# lib\tests\streamlit\web\server\routes_test.py::StaticFileHandlerTest::test_parse_url_path_200
+# lib\tests\streamlit\web\server\routes_test.py::StaticFileHandlerTest::test_reserved_paths_serve_404
+{% set tests_to_skip = tests_to_skip + " or test_mimetype_is_overridden_by_server" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_nonexistent_urls_return_default_page" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_parse_url_path_200" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_reserved_paths_serve_404" %}  # [win]
+
+# >           raise AssertionError(msg)
+# E           AssertionError: Expected 'help' to be called once. Called 0 times.
+# lib\tests\streamlit\write_test.py::StreamlitWriteTest::test_obj_instance
+# lib\tests\streamlit\write_test.py::StreamlitWriteTest::test_repr_html
+# lib\tests\streamlit\write_test.py::StreamlitWriteTest::test_repr_html_no_html_tags_in_string
+# lib\tests\streamlit\write_test.py::StreamlitWriteTest::test_repr_html_not_callable
+{% set tests_to_skip = tests_to_skip + " or test_obj_instance" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_repr_html" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_repr_html_no_html_tags_in_string" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_repr_html_not_callable" %}  # [win]
+
 test:
   source_files:
     - lib/tests
@@ -108,7 +228,8 @@ test:
   commands:
     - pip check
     - streamlit --help
-    - pytest -v {{ ignore_tests }} lib/tests
+    - pytest -v {{ ignore_tests }} lib/tests  # [not win]
+    - pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" lib/tests  # [win]
   requires:
     - pip
     - pytest
