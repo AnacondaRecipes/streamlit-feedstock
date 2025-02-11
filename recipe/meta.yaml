@@ -98,6 +98,11 @@ requirements:
 {% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/elements/graphviz_test.py" %}  # [py>312]
 
 # ++++++++++++ On win ++++++++++++++++++:
+# Tests randomly failed on the build machine, locally work as waited.
+# >           uncached = client.forward_msgs.pop()
+# E           IndexError: pop from empty list
+{% set ignore_tests = ignore_tests + " --ignore=lib/tests/streamlit/runtime/runtime_test.py" %}  # [win]
+
 # >       self.assertEqual(PATH, component.path)
 # E       AssertionError: 'not/a/real/path' != 'not\\a\\real\\path'
 # E       - not/a/real/path
@@ -167,11 +172,6 @@ requirements:
 # E           Actual: makedirs('/mock/home/folder/.streamlit', exist_ok=True)
 # lib\tests\streamlit\runtime\credentials_test.py::CredentialsClassTest::test_Credentials_save
 {% set tests_to_skip = tests_to_skip + " or test_Credentials_save" %}  # [win]
-
-# Tests randomly failed on the build machine, locally work as waited.
-# >           uncached = client.forward_msgs.pop()
-# E           IndexError: pop from empty list
-{% set ignore_tests = ignore_tests + " --ignore=lib\tests\streamlit\runtime\runtime_test.py" %}  # [win]
 
 # >       return codecs.charmap_encode(input,self.errors,encoding_table)[0]
 # E       UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f6a8' in position 83: character maps to <undefined>
