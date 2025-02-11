@@ -1,1 +1,1 @@
-%PYTHON% -m pip install ./streamlit_pypi -vv --no-deps --no-build-isolation
+%PYTHON% -m pip install ./streamlit -vv --no-deps --no-build-isolation

@@ -2,16 +2,16 @@
 {% set version = "1.42.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name|lower }}-split
   version: {{ version }}
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
     sha256: 8c48494ccfad33e7d0bc5873151800b203cb71203bfd42bc7418940710ca4970
-    folder: streamlit_pypi
+    folder: streamlit
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
     sha256: d13d8ed5f0b8b429febe0868619d7b42298e7badba266ee7fa73823039ce7de8
-    folder: streamlit_git
+    folder: streamlit_tests
 
 build:
   number: 0
@@ -26,7 +26,6 @@ build:
 requirements:
   host:
     - python
-    - pip
   run:
     - python
 
@@ -38,10 +37,6 @@ outputs:
       entry_points:
         - streamlit = streamlit.web.cli:main
     requirements:
-      build:
-        - patch  # [not win]
-        - m2-patch  # [win]
-        - protobuf >=3.20,<6
       host:
         - pip
         - python
@@ -90,17 +85,18 @@ outputs:
         - {{ pin_subpackage('streamlit', exact=True) }}
 
     # ModuleNotFoundError: No module named python-graphviz
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/elements/graphviz_test.py" %}  # [py>312]
+    {% set ignore_tests = "" %}
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/elements/graphviz_test.py" %}  # [py>312]
 
     # assert """Authentication credentials in `.streamlit/secrets.toml` are missing the "redirect_uri" key. Please check your configuration.""" == str(ex.exception)
-    {% set ignore_tests = " --ignore=streamlit_git/lib/tests/streamlit/user_info_test.py" %}
+    {% set ignore_tests = " --ignore=streamlit_tests/lib/tests/streamlit/user_info_test.py" %}
 
     # AssertionError: (1, 6, 4) != None
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/git_util_test.py" %}
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
 
     # AssertionError: Expected 'warning' to have been called once. Called 0 times.
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/watcher/local_sources_watcher_test.py" %}
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/config_test.py" %}
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/watcher/local_sources_watcher_test.py" %}
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/config_test.py" %}
 
     # AssertionError: 'not/a/real/path' != 'not\\a\\real\\path'
     {% set tests_to_skip = "" %}
@@ -143,17 +139,17 @@ outputs:
     {% set tests_to_skip = tests_to_skip + " or test_repr_html_not_callable" %}  # [win]
 
     # AttributeError: module 'numpy' has no attribute 'bool8'. Did you mean: 'bool'?
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/delta_generator_test.py" %}  # [py>312]
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/elements/plotly_chart_test.py" %}  # [py>312]
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}  # [py>312]
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}  # [py>312]
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/runtime/fragment_test.py" %}  # [py>312]
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/runtime/state/widgets_test.py" %}  # [py>312]
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/streamlit_test.py" %}  # [py>312]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/delta_generator_test.py" %}  # [py>312]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/elements/plotly_chart_test.py" %}  # [py>312]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}  # [py>312]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}  # [py>312]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}  # [py>312]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/state/widgets_test.py" %}  # [py>312]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/streamlit_test.py" %}  # [py>312]
 
     # AssertionError: 404 != 200
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/streamlit_test.py" %}
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/web/server/server_test.py" %}
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/streamlit_test.py" %}
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
 
     # sqlite3.OperationalError: unable to open database file
     {% set tests_to_skip = tests_to_skip + " or test_verify_sqlite3_integration" %}  # [win]
@@ -175,19 +171,19 @@ outputs:
     {% set tests_to_skip = tests_to_skip + " or test_register_duplicate_path" %}  # [win]
 
     # IndexError: pop from empty list
-    {% set ignore_tests = ignore_tests + " --ignore=streamlit_git/lib/tests/streamlit/runtime/runtime_test.py" %}  # [win]
+    {% set ignore_tests = ignore_tests + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py" %}  # [win]
 
     test:
       source_files:
-        - streamlit_git/lib/tests
-        - streamlit_git/lib/setup.py
+        - streamlit_tests/lib/tests
+        - streamlit_tests/lib/setup.py
       imports:
         - streamlit
       commands:
         - pip check
         - streamlit --help
-        - pytest -v {{ ignore_tests }} streamlit_git/lib/tests  # [not win]
-        - pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" streamlit_git/lib/tests  # [win]
+        - pytest -v {{ ignore_tests }} streamlit_tests/lib/tests  # [not win]
+        - pytest -v {{ ignore_tests }} -k "not ({{ tests_to_skip }})" streamlit_tests/lib/tests  # [win]
       requires:
         - pip
         - pytest
@@ -222,3 +218,7 @@ extra:
     - randyzwitch
     - kmcgrady
   feedstock-name: streamlit
+  skip-lints:
+    # As we are only running the pytests in streamlit-tests we do not require python build tools
+    - missing_python_build_tool
+    - missing_wheel
