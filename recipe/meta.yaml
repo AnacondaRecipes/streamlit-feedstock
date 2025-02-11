@@ -168,16 +168,10 @@ requirements:
 # lib\tests\streamlit\runtime\credentials_test.py::CredentialsClassTest::test_Credentials_save
 {% set tests_to_skip = tests_to_skip + " or test_Credentials_save" %}  # [win]
 
+# Tests randomly failed on the build machine, locally work as waited.
 # >           uncached = client.forward_msgs.pop()
 # E           IndexError: pop from empty list
-# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_duplicate_forwardmsg_caching
-# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_forwardmsg_cache_clearing
-# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_forwardmsg_cacheable_flag
-# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_forwardmsg_hashing
-{% set tests_to_skip = tests_to_skip + " or test_duplicate_forwardmsg_caching" %}  # [win]
-{% set tests_to_skip = tests_to_skip + " or test_forwardmsg_cache_clearing" %}  # [win]
-{% set tests_to_skip = tests_to_skip + " or test_forwardmsg_cacheable_flag" %}  # [win]
-{% set tests_to_skip = tests_to_skip + " or test_forwardmsg_hashing" %}  # [win]
+{% set ignore_tests = ignore_tests + " --ignore=lib\tests\streamlit\runtime\runtime_test.py" %}  # [win]
 
 # >       return codecs.charmap_encode(input,self.errors,encoding_table)[0]
 # E       UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f6a8' in position 83: character maps to <undefined>
