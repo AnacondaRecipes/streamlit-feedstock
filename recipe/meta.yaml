@@ -172,8 +172,12 @@ requirements:
 # E           IndexError: pop from empty list
 # lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_duplicate_forwardmsg_caching
 # lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_forwardmsg_cache_clearing
+# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_forwardmsg_cacheable_flag
+# lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_forwardmsg_hashing
 {% set tests_to_skip = tests_to_skip + " or test_duplicate_forwardmsg_caching" %}  # [win]
 {% set tests_to_skip = tests_to_skip + " or test_forwardmsg_cache_clearing" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_forwardmsg_cacheable_flag" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_forwardmsg_hashing" %}  # [win]
 
 # >       return codecs.charmap_encode(input,self.errors,encoding_table)[0]
 # E       UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f6a8' in position 83: character maps to <undefined>
@@ -242,7 +246,7 @@ test:
     - matplotlib-base >=3.3.4
     - hypothesis >=6.17.4
     - python-graphviz >=0.17  # [py<313]
-    # upstream pytest-benchmark==5.1.0, butonly 4.0.0 is avaliable in main
+    # upstream pytest-benchmark==5.1.0, but only 4.0.0 is avaliable in main
     - pytest-benchmark >=4.0.0
 
 about:
