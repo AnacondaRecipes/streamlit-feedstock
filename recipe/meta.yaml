@@ -165,7 +165,7 @@ outputs:
     'test_alert',  # [win]
 
     #+++++++++
-    # Problems in MockSessionClient. Data frame is not успевает make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken on windows. Won`t fix.
+    # Problems in MockSessionClient. Data frame is not have time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken on windows. Won`t fix.
     #+++++++++
     #streamlit_tests\lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_duplicate_forwardmsg_caching
     #>       cached = client.forward_msgs.pop()
