@@ -87,22 +87,25 @@ outputs:
         - {{ pin_subpackage('streamlit', exact=True) }}
 
     #+++++++++++++++ALL PLATFORMS+++++++++++++++
-
     {% set tests_to_ignore = [
+    # streamlit_tests\lib\tests\streamlit\config_test.py::ConfigTest::test_check_conflicts_server_csrf
     # Logger troubles. For some reason mock_logger.warning.assert_called_once() return 0;
     #>           raise AssertionError(msg)
     #E           AssertionError: Expected 'warning' to have been called once. Called 0 times.
-    'test_check_conflicts_server_csrf', # streamlit_tests\lib\tests\streamlit\config_test.py::ConfigTest::test_check_conflicts_server_csrf
+    'test_check_conflicts_server_csrf',
+    #streamlit_tests\lib\tests\streamlit\delta_generator_test.py::RunWarningTest::test_run_warning_absence
     #>           self.assertNotRegex("".join(logs.output), r"streamlit run")
     #E           AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
-    'test_run_warning_absence', #streamlit_tests\lib\tests\streamlit\delta_generator_test.py::RunWarningTest::test_run_warning_absence
+    'test_run_warning_absence',
+    #streamlit_tests\lib\tests\streamlit\git_util_test.py::GitUtilTest::test_git_repo_valid
     # We are using release tarbal and don`t have .git directory inside. Won`t fix.
     #>           self.assertTrue(repo.is_valid())
     #E           AssertionError: False is not true
-    'test_git_repo_valid', #streamlit_tests\lib\tests\streamlit\git_util_test.py::GitUtilTest::test_git_repo_valid
+    'test_git_repo_valid',
+    #streamlit_tests\lib\tests\streamlit\git_util_test.py::GitUtilTest::test_old_git_version
     #>           self.assertEqual((1, 6, 4), repo.git_version)
     #E           AssertionError: (1, 6, 4) != None
-    'test_old_git_version', #streamlit_tests\lib\tests\streamlit\git_util_test.py::GitUtilTest::test_old_git_version
+    'test_old_git_version',
     # This tests need google microsoft credentials in .streamlit/secrets.toml to login with authlib. Won`t fix.
     #>       assert (
     #            "Authentication credentials in `.streamlit/secrets.toml` are missing for the "
@@ -119,30 +122,38 @@ outputs:
     'test_user_login_redirect_uri_missing',
     'test_user_login_required_fields_missing',
     'test_user_login_with_invalid_provider',
+    #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_script_and_2_modules_in_series
     #>       self.assertEqual(fob.call_count, 2)  # dummy module and __init__.py
     #E       AssertionError: 0 != 2
-    'test_script_and_2_modules_in_series', #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_script_and_2_modules_in_series
+    'test_script_and_2_modules_in_series',
+    #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_just_script
     #>       self.assertEqual(fob.call_count, 1)  # __init__.py
     #E       AssertionError: 0 != 1
-    'test_just_script', #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_just_script
+    'test_just_script',
+    #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_misbehaved_module
     #>           raise AssertionError(msg)
     #E           AssertionError: Expected 'PathWatcher' to have been called once. Called 0 times.
-    'test_misbehaved_module',  #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_misbehaved_module
+    'test_misbehaved_module',
+    #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_namespace_package_unloaded
     #>           self.assertNotIn("pkg", sys.modules)
     #E           AssertionError: 'pkg' unexpectedly found in {'pkg': <module 'tests.streamlit.watcher.test_data.namespace_package' (<_frozen_importlib_external._NamespaceLoader object at 0x000001D69EC05510>)>}
-    'test_namespace_package_unloaded', #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_namespace_package_unloaded
+    'test_namespace_package_unloaded',
+    #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_nested_module_parent_unloaded
     #>           self.assertNotIn("NESTED_MODULE_CHILD", sys.modules)
     #E           AssertionError: 'NESTED_MODULE_CHILD' unexpectedly found in {'DUMMY_MODULE_1': <module 'tests.streamlit.watcher.test_data.dummy_module1' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\dummy_module1.py'>, 'NESTED_MODULE_PARENT': <module 'tests.streamlit.watcher.test_data.nested_module_parent' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\nested_module_parent.py'>, 'NESTED_MODULE_CHILD': <module 'tests.streamlit.watcher.test_data.nested_module_child' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\nested_module_child.py'>}
-    'test_nested_module_parent_unloaded', #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_nested_module_parent_unloaded
+    'test_nested_module_parent_unloaded',
+    #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_script_and_2_modules_at_once
     #>       self.assertEqual(fob.call_count, 3)  # dummy modules and __init__.py
     #E       AssertionError: 0 != 3
-    'test_script_and_2_modules_at_once', #streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_script_and_2_modules_at_once
+    'test_script_and_2_modules_at_once',
+    #streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ScriptCheckEndpointDoesNotExistTest::test_endpoint
     #>       self.assertEqual(404, response.code)
     #E       AssertionError: 404 != 200
-    'test_endpoint', #streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ScriptCheckEndpointDoesNotExistTest::test_endpoint
+    'test_endpoint',
+    #streamlit_tests/lib/tests/streamlit/config_test.py::ConfigTest::test_server_headless_via_atom_plugin
     #>       self.assertEqual(True, config.get_option("server.headless"))
     #E       AssertionError: True != False
-    'test_server_headless_via_atom_plugin', #streamlit_tests/lib/tests/streamlit/config_test.py::ConfigTest::test_server_headless_via_atom_plugin
+    'test_server_headless_via_atom_plugin',
 
     # +++++++++++++++WINDOWS ONLY+++++++++++++++
     #+++++++++
@@ -165,7 +176,7 @@ outputs:
     'test_alert',  # [win]
 
     #+++++++++
-    # Problems in MockSessionClient. Data frame is not have time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken on windows. Won`t fix.
+    # Problems in MockSessionClient. Data frame is not успевает make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken on windows. Won`t fix.
     #+++++++++
     #streamlit_tests\lib\tests\streamlit\runtime\runtime_test.py::RuntimeTest::test_duplicate_forwardmsg_caching
     #>       cached = client.forward_msgs.pop()
@@ -279,14 +290,14 @@ outputs:
     #E       ? ^    ^      ^
     #E       + /some/random/path
     #E       ? ^    ^      ^
-    'test_normalize_path_join',  # [win]
-    ##streamlit_tests\lib\tests\streamlit\watcher\event_based_path_watcher_test.py::EventBasedPathWatcherTest::test_correctly_resolves_watched_file_path
+    'test_normalize_path_join',  # [win] 
+    #streamlit_tests\lib\tests\streamlit\watcher\event_based_path_watcher_test.py::EventBasedPathWatcherTest::test_correctly_resolves_watched_file_path
     #>       assert folder_path == "/this/is/my/dir"
     #E       AssertionError: assert 'C:\\this\\is\\my\\dir' == '/this/is/my/dir'
     #E         - /this/is/my/dir
     #E         + C:\this\is\my\dir
     'test_correctly_resolves_watched_file_path',  # [win]
-    ##streamlit_tests\lib\tests\streamlit\watcher\event_based_path_watcher_test.py::EventBasedPathWatcherTest::test_correctly_resolves_watched_folder_path
+    #streamlit_tests\lib\tests\streamlit\watcher\event_based_path_watcher_test.py::EventBasedPathWatcherTest::test_correctly_resolves_watched_folder_path
     #>       assert folder_path == "/this/is/my/dir"
     #E       AssertionError: assert 'C:\\this\\is\\my\\dir' == '/this/is/my/dir'
     #E         - /this/is/my/dir
