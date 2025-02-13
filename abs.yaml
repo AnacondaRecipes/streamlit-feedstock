@@ -1,2 +1,6 @@
 build_env_vars:
   ANACONDA_ROCKET_ENABLE_PY313 : yes
+
+channels:
+  - https://staging.continuum.io/prefect/fs/graphviz-feedstock/pr10/646c4d0 # graphviz
+  - https://staging.continuum.io/prefect/fs/python-graphviz-feedstock/pr8/acd4302 # python-graphviz
