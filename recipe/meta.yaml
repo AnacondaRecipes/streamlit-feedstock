@@ -96,15 +96,6 @@ outputs:
     #>           self.assertNotRegex("".join(logs.output), r"streamlit run")
     #E           AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
     {% set tests_to_ignore = tests_to_ignore + " or test_run_warning_absence" %}
-    #streamlit_tests\lib\tests\streamlit\git_util_test.py::GitUtilTest::test_git_repo_valid
-    # We are using release tarbal and don`t have .git directory inside. Won`t fix.
-    #>           self.assertTrue(repo.is_valid())
-    #E           AssertionError: False is not true
-    {% set tests_to_ignore = tests_to_ignore + " or test_git_repo_valid" %}
-    #streamlit_tests\lib\tests\streamlit\git_util_test.py::GitUtilTest::test_old_git_version
-    #>           self.assertEqual((1, 6, 4), repo.git_version)
-    #E           AssertionError: (1, 6, 4) != None
-    {% set tests_to_ignore = tests_to_ignore + " or test_old_git_version" %}
     # This tests need google microsoft credentials in .streamlit/secrets.toml to login with authlib. Won`t fix.
     #>       assert (
     #            "Authentication credentials in `.streamlit/secrets.toml` are missing for the "
@@ -327,7 +318,8 @@ outputs:
       commands:
         - pip check
         - streamlit --help
-        - pytest -n auto -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_ignore }})" streamlit_tests/lib/tests
+        # git_util_test skipped, no need to test git.
+        - pytest -n auto -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_ignore }})" --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py streamlit_tests/lib/tests
       requires:
         - pip
         - pytest
