@@ -103,6 +103,21 @@ outputs:
     #>           self.assertNotRegex("".join(logs.output), r"streamlit run")
     #E           AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
     {% set tests_to_ignore = tests_to_ignore + " or test_run_warning_absence" %}
+    #streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ServerTest::test_websocket_compression
+    #>           return super().setUp()
+    #>           raise RuntimeError("Runtime instance already exists!")
+    #E           RuntimeError: Runtime instance already exists!
+    {% set tests_to_ignore = tests_to_ignore + " or test_websocket_compression" %}
+    #streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ServerTest::test_websocket_compression_disabled
+    #>           return super().setUp()
+    #>           raise RuntimeError("Runtime instance already exists!")
+    #E           RuntimeError: Runtime instance already exists!
+    {% set tests_to_ignore = tests_to_ignore + " or test_websocket_compression_disabled" %}
+    #streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ServerTest::test_websocket_connect
+    #>           return super().setUp()
+    #>           raise RuntimeError("Runtime instance already exists!")
+    #E           RuntimeError: Runtime instance already exists!
+    {% set tests_to_ignore = tests_to_ignore + " or test_websocket_connect" %}
     # This tests need google microsoft credentials in .streamlit/secrets.toml to login with authlib. Won`t fix.
     #>       assert (
     #            "Authentication credentials in `.streamlit/secrets.toml` are missing for the "
@@ -299,6 +314,11 @@ outputs:
     #>       self.assertIn("\U0001f44b", email_prompt())
     #E       AssertionError: '\U0001f44b' not found in '\\n      \\x1b[1mWelcome to Streamlit!\\x1b[0m\\n\\n      If you\u2019d like to receive helpful onboarding emails, news, offers, promotions,\\n      and the occasional swag, please enter your email address below. Otherwise,\\n      leave this field blank.\\n\\n      \\x1b[34mEmail: \\x1b[0m'
     {% set tests_to_ignore = tests_to_ignore + " or test_show_emojis" %}  # [win]
+    #streamlit_tests\lib\tests\streamlit\runtime\state\session_state_test.py::SessionStateMethodTests::test_remove_stale_widgets
+    #>       assert generated_widget_key not in self.session_state
+    #E       AssertionError: assert '$$ID-removed_widget' not in SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={}))
+    #E        +  where SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={})) = <tests.streamlit.runtime.state.session_state_test.SessionStateMethodTests testMethod=test_remove_stale_widgets>.session_state
+    {% set tests_to_ignore = tests_to_ignore + " or test_remove_stale_widgets" %}  # [win]
 
     test:
       source_files:
