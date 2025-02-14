@@ -303,9 +303,9 @@ outputs:
       commands:
         - pip check
         - streamlit --help
-        # git_util_test skipped, no need to test git. --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py
+        # git_util_test skipped, no need to test git.
         # Problems in MockSessionClient. Data frame can`t have enough time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken on windows. Won`t fix. Tests failed randomly o linux and windows. Just skip runtime tests.
-        - pytest -n auto -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_ignore }})" --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py --ignore=streamlit_tests\lib\tests\streamlit\runtime\runtime_test.py streamlit_tests/lib/tests
+        - pytest -n auto -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_ignore }})" --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py streamlit_tests/lib/tests
       requires:
         - pip
         - pytest
