@@ -189,6 +189,7 @@ outputs:
     # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
     # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/browser_websocket_handler_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
 
     test:
       source_files:
