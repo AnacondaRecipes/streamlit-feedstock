@@ -318,7 +318,7 @@ outputs:
     #>       assert generated_widget_key not in self.session_state
     #E       AssertionError: assert '$$ID-removed_widget' not in SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={}))
     #E        +  where SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={})) = <tests.streamlit.runtime.state.session_state_test.SessionStateMethodTests testMethod=test_remove_stale_widgets>.session_state
-    {% set tests_to_ignore = tests_to_ignore + " or test_remove_stale_widgets" %}  # [win]
+    {% set tests_to_ignore = tests_to_ignore + " or test_remove_stale_widgets" %}
 
     test:
       source_files:
