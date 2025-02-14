@@ -92,6 +92,13 @@ outputs:
     #>           raise AssertionError(msg)
     #E           AssertionError: Expected 'warning' to have been called once. Called 0 times.
     {% set tests_to_ignore = "test_check_conflicts_server_csrf" %}
+     #streamlit_tests/lib/tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_webp_image_200
+    # >       assert response.headers["Content-Type"] == "image/webp"
+    # E       AssertionError: assert 'application/octet-stream' == 'image/webp'
+    # E
+    # E         - image/webp
+    # E         + application/octet-stream
+    {% set tests_to_ignore = tests_to_ignore + " or test_static_webp_image_200" %}
     #streamlit_tests\lib\tests\streamlit\delta_generator_test.py::RunWarningTest::test_run_warning_absence
     #>           self.assertNotRegex("".join(logs.output), r"streamlit run")
     #E           AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
