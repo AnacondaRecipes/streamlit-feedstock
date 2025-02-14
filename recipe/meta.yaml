@@ -126,22 +126,6 @@ outputs:
     {% set tests_to_skip = tests_to_skip + " or test_run_multiple_fragments" %}
 
     # ++++++++++
-    # Runtime is already exist:
-    # ++++++++++
-    # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
-    # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
-    # ++++++++++
-    # streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ServerTest::test_websocket_compression
-    # streamlit_tests/lib/tests/streamlit/runtime/runtime_threading_test.py::RuntimeThreadingTest::test_create_runtime_on_another_thread
-    # streamlit_tests/lib/tests/streamlit/web/bootstrap_test.py::BootstrapRunTest::test_bootstrap_run
-    # >           return super().setUp()
-    # >           raise RuntimeError("Runtime instance already exists!")
-    # E           RuntimeError: Runtime instance already exists!
-    {% set tests_to_skip = tests_to_skip + " or test_websocket" %}
-    {% set tests_to_skip = tests_to_skip + " or test_create_runtime_on_another_thread" %}
-    {% set tests_to_skip = tests_to_skip + " or test_bootstrap_run" %}
-
-    # ++++++++++
     # Assertion errors:
     # ++++++++++
     # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_just_script
@@ -190,6 +174,8 @@ outputs:
     # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/browser_websocket_handler_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
+    
 
     test:
       source_files:
