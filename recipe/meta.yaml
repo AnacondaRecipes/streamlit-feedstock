@@ -15,14 +15,10 @@ source:
 
 build:
   number: 0
-  # Watchdog is not avaliable on win + py313
-  # https://github.com/AnacondaRecipes/streamlit-feedstock/pull/25#discussion_r1951425010
-  # Need to build watchdog >=4.0.2
+  # Need to build watchdog >=4.0.2 if we want to build py313
   # https://github.com/streamlit/streamlit/blob/1.42.0/lib/setup.py#L143
   # python_requires=">=3.9, !=3.9.7"
   skip: True  # [py<39 or py>312]
-  # toml is not avaaliable on linux-s390x
-  skip: True  # [s390x]
 
 requirements:
   host:
@@ -192,7 +188,7 @@ outputs:
         - pip
         - pytest
         - parameterized 
-        # upstream authlib >=1.3.2, but only 1.3.1 is avaliable in main
+        # upstream authlib >=1.3.2, but only 1.3.1 is available in main
         - authlib >=1.3.1
         - requests-mock
         - watchdog >=2.1.5
@@ -201,7 +197,7 @@ outputs:
         - matplotlib-base >=3.3.4
         - hypothesis >=6.17.4
         - python-graphviz >=0.17
-        # upstream pytest-benchmark==5.1.0, but only 4.0.0 is avaliable in main
+        # upstream pytest-benchmark==5.1.0, but only 4.0.0 is available in main
         - pytest-benchmark >=4.0.0
         - pytest-xdist
         - pytest-rerunfailures
@@ -224,7 +220,6 @@ extra:
     - raybellwaves
     - randyzwitch
     - kmcgrady
-  feedstock-name: streamlit
   skip-lints:
     # As we are only running the pytests in streamlit-tests we do not require python build tools
     - missing_python_build_tool
