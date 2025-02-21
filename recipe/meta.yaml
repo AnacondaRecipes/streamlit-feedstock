@@ -15,10 +15,7 @@ source:
 
 build:
   number: 0
-  # Need to build watchdog >=4.0.2 if we want to build py313
-  # https://github.com/streamlit/streamlit/blob/1.42.0/lib/setup.py#L143
-  # python_requires=">=3.9, !=3.9.7"
-  skip: True  # [py<39 or py>312]
+  skip: True  # [py<39]
 
 requirements:
   host:
