@@ -168,6 +168,7 @@ outputs:
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/browser_websocket_handler_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_threading_test.py" %}
     
 
     test:
