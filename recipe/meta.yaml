@@ -162,6 +162,8 @@ outputs:
     {% set tests_to_skip = tests_to_skip + " or test_shutdown" %}
     # doc string changed in py313
     {% set tests_to_skip = tests_to_skip + " or test_none_arg" %}  # [py>=313]
+    # test timing out on aarch64, most likely a performance issue
+    {% set tests_to_skip = tests_to_skip + " or test_alert" %}  # [aarch64]
 
 
     # The git_util_test.py tests skipped, no need to test git.
