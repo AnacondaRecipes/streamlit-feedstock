@@ -160,6 +160,9 @@ outputs:
     {% set tests_to_skip = tests_to_skip + " or test_show_emojis_windows" %}  # [not win]
     # looks like timing issue, passing locally
     {% set tests_to_skip = tests_to_skip + " or test_shutdown" %}
+    # doc string changed in py313
+    {% set tests_to_skip = tests_to_skip + " or test_none_arg" %}  # [py>=313]
+
 
     # The git_util_test.py tests skipped, no need to test git.
     {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
