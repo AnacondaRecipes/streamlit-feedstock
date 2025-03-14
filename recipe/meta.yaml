@@ -1,213 +1,61 @@
 {% set name = "streamlit" %}
-{% set version = "1.39.0" %}
+{% set version = "1.39.1" %}
 
 package:
-  name: {{ name|lower }}-split
+  name: {{ name|lower }}
   version: {{ version }}
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: fef9de7983c4ee65c08e85607d7ffccb56b00482b1041fa62f90e4815d39df3a
-    folder: streamlit
-  - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: a6292b78175f22252cf5d708606ad8207cc07f8662e116efcefe289f8cb452ce
-    folder: streamlit_tests
+    sha256: 431cbfa5292e19be4b11328676cd3e55ac721a38ef6557d019f2c9a4ad738f21
 
 build:
   number: 0
+  entry_points:
+    - streamlit = streamlit.web.cli:main
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   skip: True  # [py<38]
 
 requirements:
   host:
+    - pip
     - python
+    - wheel
+    - setuptools
   run:
     - python
+    - altair >=4.0,<6
+    - blinker >=1.0.0,<2
+    - cachetools >=4.0,<6
+    - click >=7.0,<9
+    - numpy >=1.20,<3
+    - packaging >=20,<25
+    - pandas >=1.4.0,<3
+    - pillow >=7.1.0,<11
+    - protobuf >=3.20,<6
+    - pyarrow >=7.0
+    - requests >=2.27,<3
+    - rich >=10.14.0,<14
+    - tenacity >=8.1.0,<10
+    - toml >=0.10.1,<2
+    - typing_extensions >=4.3.0,<5
+    - watchdog >=2.1.5,<6  # [not osx]
+    - gitpython >=3.0.7,<4,!=3.1.19
+    - pydeck >=0.8.0b4,<1
+    - tornado >=6.0.3,<7
+  run_constrained:
+    - snowflake-snowpark-python >=1.17.0  # [py<312]
+    - snowflake-connector-python >=2.8.0  # [py<312]
+    - python !=3.9.7
 
-outputs:
-  - name: streamlit
-    script: build-output.sh  # [not win]
-    script: build-output.bat  # [win]
-    build:
-      entry_points:
-        - streamlit = streamlit.web.cli:main
-    requirements:
-      host:
-        - pip
-        - python
-        - wheel
-        - setuptools
-      run:
-        - python
-        - altair >=4.0,<6
-        - blinker >=1.0.0,<2
-        - cachetools >=4.0,<6
-        - click >=7.0,<9
-        - numpy >=1.20,<3
-        - packaging >=20,<25
-        - pandas >=1.4.0,<3
-        - pillow >=7.1.0,<11
-        - protobuf >=3.20,<6
-        - pyarrow >=7.0
-        - requests >=2.27,<3
-        - rich >=10.14.0,<14
-        - tenacity >=8.1.0,<10
-        - toml >=0.10.1,<2
-        - typing_extensions >=4.3.0,<5
-        - watchdog >=2.1.5,<6  # [not osx]
-        - gitpython >=3.0.7,<4,!=3.1.19
-        - pydeck >=0.8.0b4,<1
-        - tornado >=6.0.3,<7
-      run_constrained:
-        - snowflake-snowpark-python >=1.17.0  # [py<312]
-        - snowflake-connector-python >=2.8.0  # [py<312]
-        - python !=3.9.7
-    test:
-      imports:
-        - streamlit
-      commands:
-        - pip check
-        - streamlit --help
-      requires:
-        - pip
-
-  - name: streamlit-tests
-    build:
-    requirements:
-      host:
-        - python
-      run:
-        - python
-        - {{ pin_subpackage('streamlit', exact=True) }}
-
-    # The server is not correctly recognizing .webp files and defaults to application/octet-stream instead of image/webp, likely due to missing or incorrect MIME type configuration.
-    # streamlit_tests/lib/tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_webp_image_200
-    # >       assert response.headers["Content-Type"] == "image/webp"
-    # E       AssertionError: assert 'application/octet-stream' == 'image/webp'
-    # E
-    # E         - image/webp
-    # E         + application/octet-stream
-    {% set tests_to_skip = "test_static_webp_image_200" %}
-
-    # The test fails because "streamlit run" appears in the captured logs, likely due to Streamlit emitting a warning message that wasn't suppressed or filtered out.
-    # streamlit_tests\lib\tests\streamlit\delta_generator_test.py::RunWarningTest::test_run_warning_absence
-    # >       self.assertNotRegex("".join(logs.output), r"streamlit run")
-    # E       AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
-    {% set tests_to_skip = tests_to_skip + " or test_run_warning_absence" %}
-
-    # This tests needs Google Microsoft credentials in .streamlit/secrets.toml to login with authlib. Won`t fix.
-    # >      assert (
-    #            "Authentication credentials in `.streamlit/secrets.toml` are missing for the "
-    #            'authentication provider "invalid_provider". Please check your configuration.'
-    #        ) == str(ex.exception)
-    {% set tests_to_skip = tests_to_skip + " or test_user_login" %}
-
-    # ++++++++++
-    # Expected calls:
-    # ++++++++++
-    # streamlit_tests\lib\tests\streamlit\config_test.py::ConfigTest::test_check_conflicts_server_csrf
-    # Logger troubles. For some reason mock_logger.warning.assert_called_once() return 0;
-    # >       raise AssertionError(msg)
-    # E       AssertionError: Expected 'warning' to have been called once. Called 0 times.
-    {% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_misbehaved_module
-    # >       raise AssertionError(msg)
-    # E       AssertionError: Expected 'PathWatcher' to have been called once. Called 0 times.
-    {% set tests_to_skip = tests_to_skip + " or test_misbehaved_module" %}
-    # streamlit_tests\lib\tests\streamlit\runtime\scriptrunner\script_runner_test.py::ScriptRunnerTest::test_run_multiple_fragments
-    # >       Runtime._instance.media_file_mgr.clear_session_refs.assert_not_called()
-    # E       AssertionError: Expected 'mock' to not have been called. Called 1 times.
-    {% set tests_to_skip = tests_to_skip + " or test_run_multiple_fragments" %}
-
-    # ++++++++++
-    # Assertion errors:
-    # ++++++++++
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_just_script
-    # >       self.assertEqual(fob.call_count, 1)  # __init__.py
-    # E       AssertionError: 0 != 1
-    {% set tests_to_skip = tests_to_skip + " or test_just_script" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_namespace_package_unloaded
-    # >       self.assertNotIn("pkg", sys.modules)
-    # E       AssertionError: 'pkg' unexpectedly found in {'pkg': <module 'tests.streamlit.watcher.test_data.namespace_package' (<_frozen_importlib_external._NamespaceLoader object at 0x000001D69EC05510>)>}
-    {% set tests_to_skip = tests_to_skip + " or test_namespace_package_unloaded" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_nested_module_parent_unloaded
-    # >       self.assertNotIn("NESTED_MODULE_CHILD", sys.modules)
-    # E       AssertionError: 'NESTED_MODULE_CHILD' unexpectedly found in {'DUMMY_MODULE_1': <module 'tests.streamlit.watcher.test_data.dummy_module1' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\dummy_module1.py'>, 'NESTED_MODULE_PARENT': <module 'tests.streamlit.watcher.test_data.nested_module_parent' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\nested_module_parent.py'>, 'NESTED_MODULE_CHILD': <module 'tests.streamlit.watcher.test_data.nested_module_child' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\nested_module_child.py'>}
-    {% set tests_to_skip = tests_to_skip + " or test_nested_module_parent_unloaded" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_script_and_2_modules_at_once
-    # >       self.assertEqual(fob.call_count, 3)  # dummy modules and __init__.py
-    # E       AssertionError: 0 != 3
-    {% set tests_to_skip = tests_to_skip + " or test_script_and_2_modules" %}
-    # streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ScriptCheckEndpointDoesNotExistTest::test_endpoint
-    # >       self.assertEqual(404, response.code)
-    # E       AssertionError: 404 != 200
-    {% set tests_to_skip = tests_to_skip + " or test_endpoint" %}
-    # streamlit_tests/lib/tests/streamlit/config_test.py::ConfigTest::test_server_headless_via_atom_plugin
-    # >       self.assertEqual(True, config.get_option("server.headless"))
-    # E       AssertionError: True != False
-    {% set tests_to_skip = tests_to_skip + " or test_server_headless_via_atom_plugin" %}
-    # streamlit_tests\lib\tests\streamlit\runtime\state\session_state_test.py::SessionStateMethodTests::test_remove_stale_widgets
-    # >       assert generated_widget_key not in self.session_state
-    # E       AssertionError: assert '$$ID-removed_widget' not in SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={}))
-    # E        +  where SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={})) = <tests.streamlit.runtime.state.session_state_test.SessionStateMethodTests testMethod=test_remove_stale_widgets>.session_state
-    {% set tests_to_skip = tests_to_skip + " or test_remove_stale_widgets" %}
-    # streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py::CacheResourceStatsProviderTest::test_multiple_stats
-    # E       AssertionError: Items in the first set but not the second:
-    # E       CacheStat(category_name='st_cache_resource', cache_name='tests.streamlit.runtime.caching.cache_resource_api_test.CacheResourceStatsProviderTest.test_multiple_stats.<locals>.foo', byte_length=1896)
-    # E       Items in the second set but not the first:
-    # E       CacheStat(category_name='st_cache_resource', cache_name='tests.streamlit.runtime.caching.cache_resource_api_test.CacheResourceStatsProviderTest.test_multiple_stats.<locals>.foo', byte_length=1872)
-    {% set tests_to_skip = tests_to_skip + " or test_multiple_stats" %}
-    # seems like windows test running on linux
-    {% set tests_to_skip = tests_to_skip + " or test_show_emojis_windows" %}  # [not win]
-    # looks like timing issue, passing locally
-    {% set tests_to_skip = tests_to_skip + " or test_shutdown" %}
-    # doc string changed in py313
-    {% set tests_to_skip = tests_to_skip + " or test_none_arg" %}  # [py>=313]
-    # test timing out on aarch64, most likely a performance issue
-    {% set tests_to_skip = tests_to_skip + " or test_alert" %}  # [aarch64]
-
-
-    # The git_util_test.py tests skipped, no need to test git.
-    {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
-    # Problems in MockSessionClient. Data frame can`t have enough time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken. Tests failed randomly on linux and windows.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py" %}
-    # Problems with init self.session_state.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/state/session_state_test.py" %}
-    # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
-    # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/browser_websocket_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_threading_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/websocket_headers_test.py" %}    
-    
-
-    test:
-      source_files:
-        - streamlit_tests/lib/tests
-        - streamlit_tests/lib/setup.py
-        - streamlit_tests/lib/pytest.ini
-      imports:
-        - streamlit
-      commands:
-        - pip check
-        - streamlit --help
-        - pytest -n auto -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
-      requires:
-        - pip
-        - pytest
-        - parameterized 
-        - requests-mock
-        - watchdog >=2.1.5
-        - plotly >=5.3.1
-        - testfixtures
-        - matplotlib-base >=3.3.4
-        - hypothesis >=6.17.4
-        - python-graphviz >=0.17
-        # upstream pytest-benchmark==5.1.0, but only 4.0.0 is available in main
-        - pytest-benchmark >=4.0.0
-        - pytest-xdist
-        - pytest-rerunfailures
-        - pytest-cov
+test:
+  imports:
+    - streamlit
+  commands:
+    - pip check
+    - streamlit --help
+  requires:
+    - pip
 
 about:
   home: https://streamlit.io
@@ -227,7 +75,3 @@ extra:
     - raybellwaves
     - randyzwitch
     - kmcgrady
-  skip-lints:
-    # As we are only running the pytests in streamlit-tests we do not require python build tools
-    - missing_python_build_tool
-    - missing_wheel
