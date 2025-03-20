@@ -169,6 +169,15 @@ outputs:
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_threading_test.py" %}
     
+    # These MIME types are missing on our linux-aarch64 docker. 
+    # Before calling pytest we will add them to `sitecustomize.py` in order to add them to mimetypes.
+    {% set missing_mime_types = [
+        (".ttf", "font/ttf"),
+        (".otf", "font/otf"),
+        (".woff", "font/woff"),
+        (".woff2", "font/woff2"),
+        (".xml", "application/xml")]
+    %}
 
     test:
       source_files:
@@ -180,7 +189,8 @@ outputs:
       commands:
         - pip check
         - streamlit --help
-        - pytest -n auto -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
+        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
+        - echo "import mimetypes; {% for ext, mime in missing_mime_types %} mimetypes.add_type('{{ mime }}', '{{ ext }}');{% endfor %}" >> $SP_DIR/sitecustomize.py  # [linux]
       requires:
         - pip
         - pytest
