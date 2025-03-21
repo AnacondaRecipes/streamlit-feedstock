@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.42.0" %}
+{% set version = "1.43.2" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,15 +7,16 @@ package:
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 8c48494ccfad33e7d0bc5873151800b203cb71203bfd42bc7418940710ca4970
+    sha256: f3afa2af637d00154c6a4c560d2fde256d7dc8cc1f32a53cf20570c0967841bc
     folder: streamlit
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: d13d8ed5f0b8b429febe0868619d7b42298e7badba266ee7fa73823039ce7de8
+    sha256: faafd77cae9ff89c0f252145d723d0c98006975267ded170145320138128874d
     folder: streamlit_tests
 
 build:
   number: 0
   skip: True  # [py<39]
+  skip: True  # [linux and s390x]
 
 requirements:
   host:
@@ -49,7 +50,6 @@ outputs:
         - protobuf >=3.20,<6
         - pyarrow >=7.0
         - requests >=2.27,<3
-        - rich >=10.14.0,<14
         - tenacity >=8.1.0,<10
         - toml >=0.10.1,<2
         - typing_extensions >=4.4.0,<5
@@ -79,20 +79,11 @@ outputs:
         - python
         - {{ pin_subpackage('streamlit', exact=True) }}
 
-    # The server is not correctly recognizing .webp files and defaults to application/octet-stream instead of image/webp, likely due to missing or incorrect MIME type configuration.
-    # streamlit_tests/lib/tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_webp_image_200
-    # >       assert response.headers["Content-Type"] == "image/webp"
-    # E       AssertionError: assert 'application/octet-stream' == 'image/webp'
-    # E
-    # E         - image/webp
-    # E         + application/octet-stream
-    {% set tests_to_skip = "test_static_webp_image_200" %}
-
     # The test fails because "streamlit run" appears in the captured logs, likely due to Streamlit emitting a warning message that wasn't suppressed or filtered out.
     # streamlit_tests\lib\tests\streamlit\delta_generator_test.py::RunWarningTest::test_run_warning_absence
     # >       self.assertNotRegex("".join(logs.output), r"streamlit run")
     # E       AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
-    {% set tests_to_skip = tests_to_skip + " or test_run_warning_absence" %}
+    {% set tests_to_skip = "test_run_warning_absence" %}
 
     # This tests needs Google Microsoft credentials in .streamlit/secrets.toml to login with authlib. Won`t fix.
     # >      assert (
@@ -170,7 +161,6 @@ outputs:
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_threading_test.py" %}
     
-
     test:
       source_files:
         - streamlit_tests/lib/tests
@@ -181,7 +171,9 @@ outputs:
       commands:
         - pip check
         - streamlit --help
-        - pytest -n auto -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
+        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
+        - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
+        - pytest -n 1 -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
       requires:
         - pip
         - pytest
@@ -195,8 +187,7 @@ outputs:
         - matplotlib-base >=3.3.4
         - hypothesis >=6.17.4
         - python-graphviz >=0.17
-        # upstream pytest-benchmark==5.1.0, but only 4.0.0 is available in main
-        - pytest-benchmark >=4.0.0
+        - pytest-benchmark 5.1.0
         - pytest-xdist
         - pytest-rerunfailures
         - pytest-cov
