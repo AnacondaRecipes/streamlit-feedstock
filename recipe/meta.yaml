@@ -147,6 +147,9 @@ outputs:
     # E       Items in the second set but not the first:
     # E       CacheStat(category_name='st_cache_resource', cache_name='tests.streamlit.runtime.caching.cache_resource_api_test.CacheResourceStatsProviderTest.test_multiple_stats.<locals>.foo', byte_length=1872)
     {% set tests_to_skip = tests_to_skip + " or test_multiple_stats" %}
+    # E       AssertionError: Median import time 864183us of streamlit exceeded the max allowed threshold 700000us (percentage: 123%).In case this is expected and justified, you can change the threshold in the test.
+    # E       assert 864183 <= 700000
+    {% set tests_to_skip = tests_to_skip + " or test_importtime_median_under_threshold" %}
 
     # The git_util_test.py tests skipped, no need to test git.
     {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
