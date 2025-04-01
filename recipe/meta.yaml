@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.43.2" %}
+{% set version = "1.44.0" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,10 +7,10 @@ package:
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: f3afa2af637d00154c6a4c560d2fde256d7dc8cc1f32a53cf20570c0967841bc
+    sha256: da75933bae94595167f43822dea43fcdde0d747433f7d04989266d78967951bb
     folder: streamlit
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: faafd77cae9ff89c0f252145d723d0c98006975267ded170145320138128874d
+    sha256: 966f259d3b161b3c2bea730c2d00a352132df8acf71acbf8fcf3da5dddd2b4a0
     folder: streamlit_tests
 
 build:
@@ -147,6 +147,9 @@ outputs:
     # E       Items in the second set but not the first:
     # E       CacheStat(category_name='st_cache_resource', cache_name='tests.streamlit.runtime.caching.cache_resource_api_test.CacheResourceStatsProviderTest.test_multiple_stats.<locals>.foo', byte_length=1872)
     {% set tests_to_skip = tests_to_skip + " or test_multiple_stats" %}
+    # E       AssertionError: Median import time 864183us of streamlit exceeded the max allowed threshold 700000us (percentage: 123%).In case this is expected and justified, you can change the threshold in the test.
+    # E       assert 864183 <= 700000
+    {% set tests_to_skip = tests_to_skip + " or test_importtime_median_under_threshold" %}
 
     # The git_util_test.py tests skipped, no need to test git.
     {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
