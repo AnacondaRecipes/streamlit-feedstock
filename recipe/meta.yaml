@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.44.0" %}
+{% set version = "1.44.1" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,10 +7,10 @@ package:
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: da75933bae94595167f43822dea43fcdde0d747433f7d04989266d78967951bb
+    sha256: c6914ed6d5b76870b461510476806db370f36425ae0e6654d227c988288198d3
     folder: streamlit
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 966f259d3b161b3c2bea730c2d00a352132df8acf71acbf8fcf3da5dddd2b4a0
+    sha256: 7a6309bc671d4f290f841ecafb021aeddb175a77e9ea9fe6e07db3cbc2bf5821
     folder: streamlit_tests
 
 build:
