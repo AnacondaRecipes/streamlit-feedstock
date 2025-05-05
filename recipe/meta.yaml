@@ -46,7 +46,7 @@ outputs:
         - packaging >=20,<25
         - pandas >=1.4.0,<3
         - pillow >=7.1.0,<12
-        - protobuf >=3.20,<6
+        - protobuf >=3.20,<7
         - pyarrow >=7.0
         - requests >=2.27,<3
         - tenacity >=8.1.0,<10
