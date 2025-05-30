@@ -9,12 +9,14 @@ source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
     sha256: e37d56c0af5240dbc240976880e81366689c290a559376417246f9b3f51b4217
     folder: streamlit
+    patches:
+      - 0001-make-pydeck-optional.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
     sha256: 94e868db467ee51de31e1de9da74b2f54b03fa466c426287a1e2c6b687b8d7e8
     folder: streamlit_tests
 
 build:
-  number: 0
+  number: 1
   skip: True  # [py<39]
 
 requirements:
@@ -54,12 +56,13 @@ outputs:
         - typing_extensions >=4.4.0,<5
         - watchdog >=2.1.5,<7  # [not osx]
         - gitpython >=3.0.7,<4,!=3.1.19
-        - pydeck >=0.8.0b4,<1
         - tornado >=6.0.3,<7
       run_constrained:
         - snowflake-snowpark-python >=1.17.0  # [py<312]
         - snowflake-connector-python >=3.3.0  # [py<312]
         - python !=3.9.7
+        # todo: remove this once pydeck becomes compatible with ipywidgets 8
+        - pydeck >=0.8.0b4,<1
     test:
       imports:
         - streamlit
@@ -185,6 +188,7 @@ outputs:
         - requests-mock
         - watchdog >=2.1.5
         - plotly >=5.3.1
+        - pydeck
         - testfixtures
         - matplotlib-base >=3.3.4
         - hypothesis >=6.17.4
