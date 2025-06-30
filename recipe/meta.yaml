@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.46.0" %}
+{% set version = "1.46.1" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,12 +7,12 @@ package:
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 0b2734b48f11f1e5c8046011b6b1a2274982dc657eef2ade8db70f0e1dc53dda
+    sha256: 2cc4ad01cfeded9ad953a21829eb879b90aa77af4068c68397411c2d5c8862cf
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: dc64e84e74f9d004d6dc0a4c315c14f4527a4b44db7b371e534bfb71f3c5b4fc
+    sha256: c3563690f684cc176a4c31523f9ba698e02c283ea7d8f6ac71c536f0587361b3
     folder: streamlit_tests
 
 build:
@@ -138,48 +138,6 @@ outputs:
     # E       AssertionError: Expected 'mock' to not have been called. Called 1 times.
     {% set tests_to_skip = tests_to_skip + " or test_run_multiple_fragments" %}
 
-    # ++++++++++
-    # Assertion errors:
-    # ++++++++++
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_just_script
-    # >       self.assertEqual(fob.call_count, 1)  # __init__.py
-    # E       AssertionError: 0 != 1
-    {% set tests_to_skip = tests_to_skip + " or test_just_script" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_namespace_package_unloaded
-    # >       self.assertNotIn("pkg", sys.modules)
-    # E       AssertionError: 'pkg' unexpectedly found in {'pkg': <module 'tests.streamlit.watcher.test_data.namespace_package' (<_frozen_importlib_external._NamespaceLoader object at 0x000001D69EC05510>)>}
-    {% set tests_to_skip = tests_to_skip + " or test_namespace_package_unloaded" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_nested_module_parent_unloaded
-    # >       self.assertNotIn("NESTED_MODULE_CHILD", sys.modules)
-    # E       AssertionError: 'NESTED_MODULE_CHILD' unexpectedly found in {'DUMMY_MODULE_1': <module 'tests.streamlit.watcher.test_data.dummy_module1' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\dummy_module1.py'>, 'NESTED_MODULE_PARENT': <module 'tests.streamlit.watcher.test_data.nested_module_parent' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\nested_module_parent.py'>, 'NESTED_MODULE_CHILD': <module 'tests.streamlit.watcher.test_data.nested_module_child' from 'C:\\Users\\aosipo\\miniconda3\\conda-bld\\streamlit-split_1739411773394\\test_tmp\\streamlit_tests\\lib\\tests\\streamlit\\watcher\\test_data\\nested_module_child.py'>}
-    {% set tests_to_skip = tests_to_skip + " or test_nested_module_parent_unloaded" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_script_and_2_modules_at_once
-    # >       self.assertEqual(fob.call_count, 3)  # dummy modules and __init__.py
-    # E       AssertionError: 0 != 3
-    {% set tests_to_skip = tests_to_skip + " or test_script_and_2_modules" %}
-    # streamlit_tests/lib/tests/streamlit/web/server/server_test.py::ScriptCheckEndpointDoesNotExistTest::test_endpoint
-    # >       self.assertEqual(404, response.code)
-    # E       AssertionError: 404 != 200
-    {% set tests_to_skip = tests_to_skip + " or test_endpoint" %}
-    # streamlit_tests/lib/tests/streamlit/config_test.py::ConfigTest::test_server_headless_via_atom_plugin
-    # >       self.assertEqual(True, config.get_option("server.headless"))
-    # E       AssertionError: True != False
-    {% set tests_to_skip = tests_to_skip + " or test_server_headless_via_atom_plugin" %}
-    # streamlit_tests\lib\tests\streamlit\runtime\state\session_state_test.py::SessionStateMethodTests::test_remove_stale_widgets
-    # >       assert generated_widget_key not in self.session_state
-    # E       AssertionError: assert '$$ID-removed_widget' not in SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={}))
-    # E        +  where SessionState(_old_state={'$$ID-existing_widget': True, '$$ID-removed_widget': True, 'val_set_via_state': 5}, _new_session_state={'foo': 'bar2'}, _new_widget_state=WStates(widget_metadata={'$$ID-existing_widget': WidgetMetadata(id='$$ID-existing_widget', value_type='bool_value'), '$$ID-removed_widget': WidgetMetadata(id='$$ID-removed_widget', value_type='bool_value')}), _key_id_mapper=KeyIdMapper(_key_id_mapping={}, _id_key_mapping={}), query_params=QueryParams(_query_params={})) = <tests.streamlit.runtime.state.session_state_test.SessionStateMethodTests testMethod=test_remove_stale_widgets>.session_state
-    {% set tests_to_skip = tests_to_skip + " or test_remove_stale_widgets" %}
-    # streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py::CacheResourceStatsProviderTest::test_multiple_stats
-    # E       AssertionError: Items in the first set but not the second:
-    # E       CacheStat(category_name='st_cache_resource', cache_name='tests.streamlit.runtime.caching.cache_resource_api_test.CacheResourceStatsProviderTest.test_multiple_stats.<locals>.foo', byte_length=1896)
-    # E       Items in the second set but not the first:
-    # E       CacheStat(category_name='st_cache_resource', cache_name='tests.streamlit.runtime.caching.cache_resource_api_test.CacheResourceStatsProviderTest.test_multiple_stats.<locals>.foo', byte_length=1872)
-    {% set tests_to_skip = tests_to_skip + " or test_multiple_stats" %}
-    # E       AssertionError: Median import time 864183us of streamlit exceeded the max allowed threshold 700000us (percentage: 123%).In case this is expected and justified, you can change the threshold in the test.
-    # E       assert 864183 <= 700000
-    {% set tests_to_skip = tests_to_skip + " or test_importtime_median_under_threshold" %}
-
     # The git_util_test.py tests skipped, no need to test git.
     {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
     # Problems in MockSessionClient. Data frame can`t have enough time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken. Tests failed randomly on linux and windows.
@@ -211,10 +169,9 @@ outputs:
         - pytest -n 1 -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
       requires:
         - pip
-        - pytest
-        - parameterized 
-        # upstream authlib >=1.3.2, but only 1.3.1 is available in main
-        - authlib >=1.3.1
+        - pytest>=8.3.5
+        - parameterized
+        - authlib >=1.3.2
         - requests-mock
         - watchdog >=2.1.5
         - plotly >=5.3.1
@@ -224,8 +181,8 @@ outputs:
         - hypothesis >=6.17.4
         - python-graphviz >=0.17
         - pytest-benchmark 5.1.0
-        - pytest-xdist
-        - pytest-rerunfailures
+        - pytest-xdist>=3.6.1
+        - pytest-rerunfailures>=15.0
         - pytest-cov
 
 about:
@@ -237,7 +194,7 @@ about:
   description: |
     Streamlit lets you turn data scripts into sharable web apps in minutes, not weeks.
     It's all Python, open-source, and free!
-  doc_url: https://docs.streamlit.io/
+  doc_url: https://docs.streamlit.io
   dev_url: https://github.com/streamlit/streamlit
 
 extra:
