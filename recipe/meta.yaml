@@ -121,35 +121,20 @@ outputs:
     #        ) == str(ex.exception)
     {% set tests_to_skip = tests_to_skip + " or test_user_login" %}
 
-    # ++++++++++
-    # Expected calls:
-    # ++++++++++
     # streamlit_tests\lib\tests\streamlit\config_test.py::ConfigTest::test_check_conflicts_server_csrf
     # Logger troubles. For some reason mock_logger.warning.assert_called_once() return 0;
     # >       raise AssertionError(msg)
     # E       AssertionError: Expected 'warning' to have been called once. Called 0 times.
     {% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
-    # streamlit_tests\lib\tests\streamlit\watcher\local_sources_watcher_test.py::LocalSourcesWatcherTest::test_misbehaved_module
-    # >       raise AssertionError(msg)
-    # E       AssertionError: Expected 'PathWatcher' to have been called once. Called 0 times.
-    {% set tests_to_skip = tests_to_skip + " or test_misbehaved_module" %}
-    # streamlit_tests\lib\tests\streamlit\runtime\scriptrunner\script_runner_test.py::ScriptRunnerTest::test_run_multiple_fragments
-    # >       Runtime._instance.media_file_mgr.clear_session_refs.assert_not_called()
-    # E       AssertionError: Expected 'mock' to not have been called. Called 1 times.
-    {% set tests_to_skip = tests_to_skip + " or test_run_multiple_fragments" %}
 
     # The git_util_test.py tests skipped, no need to test git.
     {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
     # Problems in MockSessionClient. Data frame can`t have enough time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken. Tests failed randomly on linux and windows.
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py" %}
-    # Problems with init self.session_state.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/state/session_state_test.py" %}
     # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
     # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/browser_websocket_handler_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_threading_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
@@ -164,6 +149,7 @@ outputs:
       commands:
         - pip check
         - streamlit --help
+        - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
         # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
         - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
         - pytest -n 1 -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
@@ -181,8 +167,8 @@ outputs:
         - hypothesis >=6.17.4
         - python-graphviz >=0.17
         - pytest-benchmark 5.1.0
-        - pytest-xdist>=3.6.1
-        - pytest-rerunfailures>=15.0
+        - pytest-xdist >=3.6.1
+        - pytest-rerunfailures
         - pytest-cov
 
 about:
