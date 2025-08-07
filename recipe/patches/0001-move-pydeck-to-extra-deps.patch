@@ -1,6 +1,6 @@
-From aef40888f4375c2d184d61ae393dd2e2dae813c6 Mon Sep 17 00:00:00 2001
+From 3d6f286b4240cc32157e54e5c0ad080258711848 Mon Sep 17 00:00:00 2001
 From: Andrii Osipov <aosipov@anaconda.com>
-Date: Thu, 19 Jun 2025 01:47:58 -0700
+Date: Thu, 7 Aug 2025 00:02:06 -0700
 Subject: [PATCH] move pydeck to extra deps
 
 ---
@@ -8,10 +8,10 @@ Subject: [PATCH] move pydeck to extra deps
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/setup.py b/setup.py
-index 1da6d59..e5a9d2c 100644
+index 751e2fc..3835c1b 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -64,7 +64,7 @@ INSTALL_REQUIRES = [
+@@ -67,7 +67,7 @@ INSTALL_REQUIRES = [
  # `pip install streamlit` or `conda install -c conda-forge streamlit`)
  SNOWPARK_CONDA_EXCLUDED_DEPENDENCIES = [
      "gitpython>=3.0.7, <4, !=3.1.19",
@@ -20,19 +20,19 @@ index 1da6d59..e5a9d2c 100644
      # Tornado 6.0.3 was the current version when Python 3.8 was released (Oct 14, 2019).
      # Tornado 6.5.0 is skipped due to a bug with Unicode characters in the filename.
      # See https://github.com/tornadoweb/tornado/commit/62c276434dc5b13e10336666348408bf8c062391
-@@ -78,6 +78,12 @@ EXTRA_REQUIRES = {
-     "snowflake": [
+@@ -83,6 +83,12 @@ EXTRA_REQUIRES = {
          "snowflake-snowpark-python[modin]>=1.17.0; python_version<'3.12'",
          "snowflake-connector-python>=3.3.0; python_version<'3.12'",
-+    ],
+     ],
 +    # pydeck 0.9.1 and below restrict ipywidgets to version 7
 +    # This leads to non-functional systems when installed with recent jupyterlab versions.
 +    # Pydeck supports creating interactive map visualization, which is not the main feature of streamlit.
 +    "visualization": [
 +        "pydeck>=0.8.0b4, <1",
-     ]
- }
- 
++    ],
+     # Optional dependency required for auth:
+     "auth": [
+         "Authlib>=1.3.2",
 -- 
 2.39.3 (Apple Git-146)
 
