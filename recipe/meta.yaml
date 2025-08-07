@@ -35,9 +35,6 @@ outputs:
       entry_points:
         - streamlit = streamlit.web.cli:main
     requirements:
-      build:
-        - patch  # [not win]
-        - m2-patch  # [win]
       host:
         - pip
         - python
