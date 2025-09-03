@@ -167,6 +167,11 @@ outputs:
     # E        +  where False = .show_time
     # E        +    where  = empty {\n}\n.spinner
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/cache_spinner_test.py" %}  # [osx]
+    # E       Module not found "streamlit[pdf]"
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
 
     test:
       source_files:
@@ -199,6 +204,7 @@ outputs:
         - pytest-xdist >=3.6.1
         - pytest-rerunfailures
         - pytest-cov
+        - rich >=11.0.0
 
 about:
   home: https://streamlit.io
