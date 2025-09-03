@@ -108,6 +108,43 @@ outputs:
     test:
       imports:
         - streamlit
+        - streamlit.auth_util
+        - streamlit.column_config
+        - streamlit.commands
+        - streamlit.components
+        - streamlit.config_option
+        - streamlit.connections
+        - streamlit.cursor
+        - streamlit.dataframe_util
+        - streamlit.delta_generator
+        - streamlit.delta_generator_singletons
+        - streamlit.deprecation_util
+        - streamlit.elements
+        - streamlit.emojis
+        - streamlit.error_util
+        - streamlit.errors
+        - streamlit.external
+        - streamlit.file_util
+        - streamlit.git_util
+        - streamlit.hello
+        - streamlit.logger
+        - streamlit.material_icon_names
+        - streamlit.navigation
+        - streamlit.proto
+        - streamlit.runtime
+        - streamlit.source_util
+        - streamlit.string_util
+        - streamlit.temporary_directory
+        - streamlit.testing
+        - streamlit.time_util
+        - streamlit.type_util
+        - streamlit.url_util
+        - streamlit.user_info
+        - streamlit.util
+        - streamlit.vendor
+        - streamlit.version
+        - streamlit.watcher
+        - streamlit.web
       commands:
         - pip check
         - streamlit --help
