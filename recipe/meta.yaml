@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.48.0" %}
+{% set version = "1.49.1" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,12 +7,12 @@ package:
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 64da4819f4b897c8d1e9eb6396f4618b2eb5029d25af61472422d4eb0688bb75
+    sha256: 6f213f1e43f035143a56f58ad50068d8a09482f0a2dad1050d7e7e99a9689818
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 67dc94d90e89f7b77df85e64fb8f6cf9353e9e0d53e59f6d47c5834e013d6142
+    sha256: a8cb3b8a227a173544ef4fd7209c97686842fa9e27b7197717a4ee9af0de4fab
     folder: streamlit_tests
 
 build:
@@ -82,10 +82,11 @@ outputs:
         - tornado >=6.0.3,<7,!=6.5.0
       run_constrained:
         - python !=3.9.7
-        - rich >=11.0.0
         # snowflake
         - snowflake-snowpark-python >=1.17.0  # [py<312]
         - snowflake-connector-python >=3.3.0  # [py<312]
+        # pdf
+        - streamlit-pdf >=1.0.0
         # SNOWPARK_CONDA_EXCLUDED_DEPENDENCIES:
         # pydeck 0.9.1 and below restrict ipywidgets to version 7
         # This leads to non-functional systems when installed with recent jupyterlab versions.
@@ -97,13 +98,53 @@ outputs:
         - matplotlib-base >=3.0.0
         - python-graphviz >=0.19.0
         - plotly >=4.0.0
+        # orjson speeds up large plotly figure processing by 5-10x:
         - orjson >=3.5.0
         # sql
         - sqlalchemy >=2.0.0
+        # all
+        - rich >=11.0.0
 
     test:
       imports:
         - streamlit
+        - streamlit.auth_util
+        - streamlit.column_config
+        - streamlit.commands
+        - streamlit.components
+        - streamlit.config_option
+        - streamlit.connections
+        - streamlit.cursor
+        - streamlit.dataframe_util
+        - streamlit.delta_generator
+        - streamlit.delta_generator_singletons
+        - streamlit.deprecation_util
+        - streamlit.elements
+        - streamlit.emojis
+        - streamlit.error_util
+        - streamlit.errors
+        - streamlit.external
+        - streamlit.file_util
+        - streamlit.git_util
+        - streamlit.hello
+        - streamlit.logger
+        - streamlit.material_icon_names
+        - streamlit.navigation
+        - streamlit.proto
+        - streamlit.runtime
+        - streamlit.source_util
+        - streamlit.string_util
+        - streamlit.temporary_directory
+        - streamlit.testing
+        - streamlit.time_util
+        - streamlit.type_util
+        - streamlit.url_util
+        - streamlit.user_info
+        - streamlit.util
+        - streamlit.vendor
+        - streamlit.version
+        - streamlit.watcher
+        - streamlit.web
       commands:
         - pip check
         - streamlit --help
@@ -163,6 +204,11 @@ outputs:
     # E        +  where False = .show_time
     # E        +    where  = empty {\n}\n.spinner
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/cache_spinner_test.py" %}  # [osx]
+    # E       Module not found "streamlit[pdf]"
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
 
     test:
       source_files:
@@ -195,6 +241,7 @@ outputs:
         - pytest-xdist >=3.6.1
         - pytest-rerunfailures
         - pytest-cov
+        - rich >=11.0.0
 
 about:
   home: https://streamlit.io
@@ -217,3 +264,4 @@ extra:
     # As we are only running the pytests in streamlit-tests we do not require python build tools
     - missing_python_build_tool
     - missing_wheel
+    - patch_unnecessary
