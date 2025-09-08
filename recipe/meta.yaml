@@ -16,7 +16,7 @@ source:
     folder: streamlit_tests
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - streamlit = streamlit.web.cli:main
   skip: True  # [py<39]
