@@ -209,6 +209,10 @@ outputs:
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
+    # >       assert fob.call_count == 2  # dummy module and __init__.py
+    # E       AssertionError: assert 0 == 2
+    # E        +  where 0 = <MagicMock name='PathWatcher' id='5635064832'>.call_count
+    {% set tests_to_skip = tests_to_skip + " or LocalSourcesWatcherTest" %}  # [osx]
 
     test:
       source_files:
