@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.49.1" %}
+{% set version = "1.50.0" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,12 +7,12 @@ package:
 
 source:
   - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 6f213f1e43f035143a56f58ad50068d8a09482f0a2dad1050d7e7e99a9689818
+    sha256: 87221d568aac585274a05ef18a378b03df332b93e08103fffcf3cd84d852af46
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: a8cb3b8a227a173544ef4fd7209c97686842fa9e27b7197717a4ee9af0de4fab
+    sha256: f17541d72d31ec9151dabeb0ed57c40e2de43bc7a5b1c9aed2bc2109c85cff7b
     folder: streamlit_tests
 
 build:
@@ -38,7 +38,6 @@ outputs:
       host:
         - pip
         - python
-        - wheel
         - setuptools
       run:
         - python
@@ -181,12 +180,12 @@ outputs:
 
     # E       AssertionError: Median import time 864183us of streamlit exceeded the max allowed threshold 700000us (percentage: 123%).In case this is expected and justified, you can change the threshold in the test.
     # E       assert 864183 <= 700000
-    {% set tests_to_skip = tests_to_skip + " or test_importtime_median_under_threshold" %}
+    # {% set tests_to_skip = tests_to_skip + " or test_importtime_median_under_threshold" %}
 
     # E       AssertionError: Welcome message mode is True and headless mode is False yet output is:
     # E       assert ((True and not False)) == ('like to receive helpful onboarding emails, news, offers, promotions,' in '')
     # E        +  where '' = <Result okay>.output
-    {% set tests_to_skip = tests_to_skip + " or test_prompt_welcome_message_2" %}
+    # {% set tests_to_skip = tests_to_skip + " or test_prompt_welcome_message_2" %}
 
     # The git_util_test.py tests skipped, no need to test git.
     {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
@@ -203,7 +202,7 @@ outputs:
     # E       assert False is True
     # E        +  where False = .show_time
     # E        +    where  = empty {\n}\n.spinner
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/cache_spinner_test.py" %}  # [osx]
+    # {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/cache_spinner_test.py" %}  # [osx]
     # E       Module not found "streamlit[pdf]"
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
@@ -212,7 +211,7 @@ outputs:
     # >       assert fob.call_count == 2  # dummy module and __init__.py
     # E       AssertionError: assert 0 == 2
     # E        +  where 0 = <MagicMock name='PathWatcher' id='5635064832'>.call_count
-    {% set tests_to_skip = tests_to_skip + " or LocalSourcesWatcherTest" %}  # [osx]
+    # {% set tests_to_skip = tests_to_skip + " or LocalSourcesWatcherTest" %}  # [osx]
 
     test:
       source_files:
@@ -267,5 +266,3 @@ extra:
   skip-lints:
     # As we are only running the pytests in streamlit-tests we do not require python build tools
     - missing_python_build_tool
-    - missing_wheel
-    - patch_unnecessary
