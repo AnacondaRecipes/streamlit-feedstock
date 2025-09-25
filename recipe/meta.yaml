@@ -225,7 +225,7 @@ outputs:
         - streamlit --help
         - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
         # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
-        - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
+        # - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
         - pytest -n 1 -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
       requires:
         - pip
