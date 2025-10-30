@@ -6,20 +6,20 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 87221d568aac585274a05ef18a378b03df332b93e08103fffcf3cd84d852af46
+  - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+    sha256: 1e742a9c0b698f466c6f5bf58d333beda5a1fbe8de660743976791b5c1446ef6
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: f17541d72d31ec9151dabeb0ed57c40e2de43bc7a5b1c9aed2bc2109c85cff7b
+    sha256: 3c25f01ea6347ae60905c9de64821d9486023aca020ae8b285a04e0bbd5c6e8e
     folder: streamlit_tests
 
 build:
   number: 0
   entry_points:
     - streamlit = streamlit.web.cli:main
-  skip: True  # [py<39]
+  skip: True  # [py<310]
 
 requirements:
   host:
@@ -53,13 +53,13 @@ outputs:
         # Pandas <1.4 has a bug related to deleting columns in a DataFrame changing
         # the index dtype.
         - pandas >=1.4.0,<3
-        - pillow >=7.1.0,<12
+        - pillow >=7.1.0,<13
         # `protoc` < 3.20 is not able to generate protobuf code compatible with protobuf >= 3.20.
         - protobuf >=3.20,<7
         # pyarrow is not semantically versioned, gets new major versions frequently, and
         # doesn't tend to break the API on major version upgrades, so we don't put an
         # upper bound on it.
-        - pyarrow >=7.0
+        - pyarrow >=7.0,<22
         - requests >=2.27,<3
         - tenacity >=8.1.0,<10
         # Starting from Python 3.11, Python has built in support for reading TOML files.
@@ -80,7 +80,6 @@ outputs:
         # See https://github.com/tornadoweb/tornado/commit/62c276434dc5b13e10336666348408bf8c062391
         - tornado >=6.0.3,<7,!=6.5.0
       run_constrained:
-        - python !=3.9.7
         # snowflake
         - snowflake-snowpark-python >=1.17.0  # [py<312]
         - snowflake-connector-python >=3.3.0  # [py<312]
