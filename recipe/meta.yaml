@@ -1,20 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.51.0" %}
-{% set tests_to_skip = "test_run_warning_absence" %}
-{% set tests_to_skip = tests_to_skip + " or test_user_login" %}
-{% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
-{% set tests_to_skip = tests_to_skip + " or LocalSourcesWatcherTest" %}  # [osx]
-{% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
-{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
+{% set version = "1.50.0" %}
 
 package:
   name: {{ name|lower }}-split
@@ -34,7 +19,7 @@ build:
   number: 0
   entry_points:
     - streamlit = streamlit.web.cli:main
-  skip: true  # [py<39]
+  skip: True  # [py<310]
 
 requirements:
   host:
@@ -68,13 +53,13 @@ outputs:
         # Pandas <1.4 has a bug related to deleting columns in a DataFrame changing
         # the index dtype.
         - pandas >=1.4.0,<3
-        - pillow >=7.1.0,<12
+        - pillow >=7.1.0,<13
         # `protoc` < 3.20 is not able to generate protobuf code compatible with protobuf >= 3.20.
         - protobuf >=3.20,<7
         # pyarrow is not semantically versioned, gets new major versions frequently, and
         # doesn't tend to break the API on major version upgrades, so we don't put an
         # upper bound on it.
-        - pyarrow >=7.0
+        - pyarrow >=7.0,<22
         - requests >=2.27,<3
         - tenacity >=8.1.0,<10
         # Starting from Python 3.11, Python has built in support for reading TOML files.
@@ -95,7 +80,6 @@ outputs:
         # See https://github.com/tornadoweb/tornado/commit/62c276434dc5b13e10336666348408bf8c062391
         - tornado >=6.0.3,<7,!=6.5.0
       run_constrained:
-        - python !=3.9.7
         # snowflake
         - snowflake-snowpark-python >=1.17.0  # [py<312]
         - snowflake-connector-python >=3.3.0  # [py<312]
@@ -118,6 +102,7 @@ outputs:
         - sqlalchemy >=2.0.0
         # all
         - rich >=11.0.0
+
     test:
       imports:
         - streamlit
@@ -163,6 +148,7 @@ outputs:
         - streamlit --help
       requires:
         - pip
+
   - name: streamlit-tests
     build:
     requirements:
@@ -171,27 +157,47 @@ outputs:
       run:
         - python
         - {{ pin_subpackage('streamlit', exact=True) }}
+
     # The test fails because "streamlit run" appears in the captured logs, likely due to Streamlit emitting a warning message that wasn't suppressed or filtered out.
     # streamlit_tests\lib\tests\streamlit\delta_generator_test.py::RunWarningTest::test_run_warning_absence
     # >       self.assertNotRegex("".join(logs.output), r"streamlit run")
     # E       AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
+    {% set tests_to_skip = "test_run_warning_absence" %}
+
     # This tests needs Google Microsoft credentials in .streamlit/secrets.toml to login with authlib. Won`t fix.
     # >      assert (
     #            "Authentication credentials in `.streamlit/secrets.toml` are missing for the "
     #            'authentication provider "invalid_provider". Please check your configuration.'
     #        ) == str(ex.exception)
+    {% set tests_to_skip = tests_to_skip + " or test_user_login" %}
+
     # streamlit_tests\lib\tests\streamlit\config_test.py::ConfigTest::test_check_conflicts_server_csrf
     # Logger troubles. For some reason mock_logger.warning.assert_called_once() return 0;
     # >       raise AssertionError(msg)
     # E       AssertionError: Expected 'warning' to have been called once. Called 0 times.
+    {% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
+
     # The git_util_test.py tests skipped, no need to test git.
+    {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
     # Problems in MockSessionClient. Data frame can`t have enough time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken. Tests failed randomly on linux and windows.
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py" %}
     # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
     # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
     # E       Module not found "streamlit[pdf]"
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
     # >       assert fob.call_count == 2  # dummy module and __init__.py
     # E       AssertionError: assert 0 == 2
     # E        +  where 0 = <MagicMock name='PathWatcher' id='5635064832'>.call_count
+    {% set tests_to_skip = tests_to_skip + " or LocalSourcesWatcherTest" %}  # [osx]
+
     test:
       source_files:
         - streamlit_tests/lib/tests
@@ -203,7 +209,7 @@ outputs:
         - pip check
         - streamlit --help
         - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf'
+        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
         - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
         - pytest -n 1 -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
       requires:
