@@ -102,7 +102,7 @@ outputs:
         - sqlalchemy >=2.0.0
         # performance
         - orjson >=3.5.0
-        - uvloop >=0.15.2  # [win]
+        - uvloop >=0.15.2  # [not win]
         # all
         - rich >=11.0.0
 
