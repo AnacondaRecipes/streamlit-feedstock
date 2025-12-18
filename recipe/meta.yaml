@@ -1,5 +1,20 @@
 {% set name = "streamlit" %}
-{% set version = "1.52.1" %}
+{% set version = "1.52.2" %}
+{% set tests_to_skip = "test_run_warning_absence" %}
+{% set tests_to_skip = tests_to_skip + " or test_user_login" %}
+{% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
+{% set tests_to_skip = tests_to_skip + " or LocalSourcesWatcherTest" %}  # [osx]
+{% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,19 +22,19 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: b036a71866b893c97fdebaa2a2ebd21ebf2af7daea4b3abe783a57b26f55b3ca
+    sha256: 64a4dda8bc5cdd37bfd490e93bb53da35aaef946fcfc283a7980dacdf165108b
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: ade3a6986cb3f124e875d90968da12a344eee0bc363cda0ea4497d3d13af9524
+    sha256: 8a124b4f85d35ee5184afb89af57578a13d1ab3176071d56acd55c20b33b7d1c
     folder: streamlit_tests
 
 build:
   number: 0
   entry_points:
     - streamlit = streamlit.web.cli:main
-  skip: True  # [py<310]
+  skip: true  # [py<310]
 
 requirements:
   host:
@@ -105,7 +120,6 @@ outputs:
         - uvloop >=0.15.2  # [not win]
         # all
         - rich >=11.0.0
-
     test:
       imports:
         - streamlit
@@ -151,7 +165,6 @@ outputs:
         - streamlit --help
       requires:
         - pip
-
   - name: streamlit-tests
     build:
     requirements:
@@ -160,47 +173,27 @@ outputs:
       run:
         - python
         - {{ pin_subpackage('streamlit', exact=True) }}
-
     # The test fails because "streamlit run" appears in the captured logs, likely due to Streamlit emitting a warning message that wasn't suppressed or filtered out.
     # streamlit_tests\lib\tests\streamlit\delta_generator_test.py::RunWarningTest::test_run_warning_absence
     # >       self.assertNotRegex("".join(logs.output), r"streamlit run")
     # E       AssertionError: Regex matched: 'streamlit run' matches 'streamlit run' in 'WARNING:streamlit:\n  \x1b[33m\x1b[1mWarning:\x1b[0m to view a Streamlit app on a browser, use Streamlit in a file and\n  run it with the following command:\n\n    streamlit run [FILE_NAME] [ARGUMENTS]WARNING:streamlit:irrelevant warning so assertLogs passes'
-    {% set tests_to_skip = "test_run_warning_absence" %}
-
     # This tests needs Google Microsoft credentials in .streamlit/secrets.toml to login with authlib. Won`t fix.
     # >      assert (
     #            "Authentication credentials in `.streamlit/secrets.toml` are missing for the "
     #            'authentication provider "invalid_provider". Please check your configuration.'
     #        ) == str(ex.exception)
-    {% set tests_to_skip = tests_to_skip + " or test_user_login" %}
-
     # streamlit_tests\lib\tests\streamlit\config_test.py::ConfigTest::test_check_conflicts_server_csrf
     # Logger troubles. For some reason mock_logger.warning.assert_called_once() return 0;
     # >       raise AssertionError(msg)
     # E       AssertionError: Expected 'warning' to have been called once. Called 0 times.
-    {% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
-
     # The git_util_test.py tests skipped, no need to test git.
-    {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
     # Problems in MockSessionClient. Data frame can`t have enough time to make push in the MockSessionClient::list. I think await self.tick_runtime_loop() broken. Tests failed randomly on linux and windows.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/runtime_test.py" %}
     # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
     # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
     # E       Module not found "streamlit[pdf]"
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
     # >       assert fob.call_count == 2  # dummy module and __init__.py
     # E       AssertionError: assert 0 == 2
     # E        +  where 0 = <MagicMock name='PathWatcher' id='5635064832'>.call_count
-    {% set tests_to_skip = tests_to_skip + " or LocalSourcesWatcherTest" %}  # [osx]
-
     test:
       source_files:
         - streamlit_tests/lib/tests
@@ -212,7 +205,7 @@ outputs:
         - pip check
         - streamlit --help
         - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
+        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf'
         - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
         - pytest -n 1 -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
       requires:
