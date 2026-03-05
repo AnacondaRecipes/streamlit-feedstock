@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.54.0" %}
+{% set version = "1.55.0" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,12 +7,12 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 09965e6ae7eb0357091725de1ce2a3f7e4be155c2464c505c40a3da77ab69dd8
+    sha256: 015e512bbd02d000f4047e51118dc086b70e7d9c46b4a11a33c2509731379626
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 977e7e8b10dcba55fdaa480c6a7e0a2bb5d1895080d8bffafc75f0767eab5fba
+    sha256: ef6452aae7f8aefd48e4f54bfa4d1ba9bd721d16923338890eaff5f8b05ed341
     folder: streamlit_tests
 
 build:
@@ -47,7 +47,7 @@ outputs:
         # See: https://github.com/streamlit/streamlit/issues/12064
         - altair >=4.0,<7,!=5.4.0,!=5.4.1
         - blinker >=1.5.0,<2
-        - cachetools >=5.5,<7
+        - cachetools >=5.5,<8
         - click >=7.0,<9
         - numpy >=1.23,<3
         - packaging >=20
@@ -109,7 +109,6 @@ outputs:
         # sql
         - sqlalchemy >=2.0.0
         # performance
-        - orjson >=3.5.0
         - uvloop >=0.15.2  # [not win]
         - httptools >=0.6.3
         # all
