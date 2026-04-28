@@ -1,5 +1,20 @@
 {% set name = "streamlit" %}
-{% set version = "1.55.0" %}
+{% set version = "1.56.0" %}
+{% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
+{% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
+{% set tests_to_skip = "test_write_forward_msg_raises_when_closed" %}
+{% set tests_to_skip = tests_to_skip + " or test_write_forward_msg_queues_message" %}
+{% set tests_to_skip = tests_to_skip + " or test_aclose_sets_closed_and_cancels_task" %}
+{% set tests_to_skip = tests_to_skip + " or test_client_context_returns_starlette_context" %}
+{% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,12 +22,12 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 015e512bbd02d000f4047e51118dc086b70e7d9c46b4a11a33c2509731379626
+    sha256: 1176acfa89ae1318b79078e8efe689a9d02e8d58e325c00fc0e55fa2f3fe8d6a
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: ef6452aae7f8aefd48e4f54bfa4d1ba9bd721d16923338890eaff5f8b05ed341
+    sha256: 074a0d53e29c3f7fe76f8b3e99267deaa22227cd2efe9907401344cac1cd78c0
     folder: streamlit_tests
 
 build:
@@ -113,7 +128,6 @@ outputs:
         - httptools >=0.6.3
         # all
         - rich >=11.0.0
-
     test:
       imports:
         - streamlit
@@ -159,7 +173,6 @@ outputs:
         - streamlit --help
       requires:
         - pip
-
   - name: streamlit-tests
     build:
     requirements:
@@ -168,34 +181,17 @@ outputs:
       run:
         - python
         - {{ pin_subpackage('streamlit', exact=True) }}
-
     # The git_util_test.py tests skipped, no need to test git.
-    {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
     # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
     # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
     # E       Module not found "streamlit[pdf]" (streamlit-pdf not available in main channel)
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
     # >       client = StarletteSessionClient(mock_websocket)
     # >       loop = events.get_running_loop()
     # E       RuntimeError: no running event loop
-    {% set tests_to_skip = "test_write_forward_msg_raises_when_closed" %}
-    {% set tests_to_skip = tests_to_skip + " or test_write_forward_msg_queues_message" %}
-    {% set tests_to_skip = tests_to_skip + " or test_aclose_sets_closed_and_cancels_task" %}
-    {% set tests_to_skip = tests_to_skip + " or test_client_context_returns_starlette_context" %}
     # streamlit_tests\lib\tests\streamlit\config_test.py::ConfigTest::test_check_conflicts_server_csrf
     # Logger troubles. For some reason mock_logger.warning.assert_called_once() return 0;
     # >       raise AssertionError(msg)
     # E       AssertionError: Expected 'warning' to have been called once. Called 0 times.
-    {% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
-
     test:
       source_files:
         - streamlit_tests/lib/tests
@@ -206,7 +202,7 @@ outputs:
         - pip check
         - streamlit --help
         - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
-        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
+        # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf'
         - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
         - pytest -p no:cov -o addopts= -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
       requires:
@@ -232,6 +228,13 @@ outputs:
         - trio
         - httpx
         - python-multipart >=0.0.10
+
+test:
+  commands:
+    - pip check
+    - pip check
+  requires:
+    - pip
 
 about:
   home: https://streamlit.io
