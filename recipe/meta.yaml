@@ -16,7 +16,7 @@ source:
     folder: streamlit_tests
 
 build:
-  number: 0
+  number: 1
   entry_points:
     - streamlit = streamlit.web.cli:main
   skip: true  # [py<310]
@@ -56,7 +56,6 @@ outputs:
         # the index dtype.
         - pandas >=1.4.0,<4
         - pillow >=7.1.0,<13
-        - pydeck >=0.8.0b4,<1
         # `protoc` < 3.20 is not able to generate protobuf code compatible with protobuf >= 3.20.
         - protobuf >=3.20,<8
         # pyarrow is not semantically versioned, gets new major versions frequently, and
@@ -107,6 +106,10 @@ outputs:
         - uvloop >=0.15.2  # [not win]
         # all
         - rich >=11.0.0
+        # pydeck 0.9.1 and below restrict ipywidgets to version 7
+        # This leads to non-functional systems when installed with recent jupyterlab versions.
+        # Pydeck supports creating interactive map visualization, which is not the main feature of streamlit.
+        - pydeck >=0.8.0b4,<1
 
     test:
       imports:
