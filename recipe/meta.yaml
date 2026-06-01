@@ -129,7 +129,6 @@ outputs:
         - streamlit.emojis
         - streamlit.error_util
         - streamlit.errors
-        - streamlit.external
         - streamlit.file_util
         - streamlit.git_util
         - streamlit.hello
