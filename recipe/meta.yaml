@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.57.0" %}
+{% set version = "1.58.0" %}
 
 package:
   name: {{ name|lower }}-split
@@ -7,16 +7,16 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 0b028d305c1a1a757071b2c9504966787602842fc8af6e873795ca58d2b4d12f
+    sha256: 78a22e7085b053af7ce544442bf4b670771e68c509ba1bdaa056ba0708f49c3d
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 776629324f58a89482c513b1b87ddca244732e8c4ea941812b620a22b5b8c311
+    sha256: b56281a59184a2e4d10941450176c9cf03bdd41813fce84f170cec9c4ba145d1
     folder: streamlit_tests
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - streamlit = streamlit.web.cli:main
   skip: true  # [py<310]
