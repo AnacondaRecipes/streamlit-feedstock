@@ -55,7 +55,6 @@ outputs:
         # the index dtype.
         - pandas >=1.4.0,<4
         - pillow >=7.1.0,<13
-        - pydeck >=0.8.0b4,<1
         # Release builds generate Python protobuf code with protoc 26.1, whose
         # corresponding minimum runtime version is protobuf 5.26.1.
         - protobuf >=5.26.1,<8
@@ -113,6 +112,10 @@ outputs:
         - uvloop >=0.15.2  # [not win]
         # all
         - rich >=11.0.0
+        # pydeck 0.9.1 and below restrict ipywidgets to version 7
+        # This leads to non-functional systems when installed with recent jupyterlab versions.
+        # Pydeck supports creating interactive map visualization, which is not the main feature of streamlit.
+        - pydeck >=0.8.0b4,<1
 
     test:
       imports:
