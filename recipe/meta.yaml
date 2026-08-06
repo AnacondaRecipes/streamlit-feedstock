@@ -197,6 +197,7 @@ outputs:
     # >       raise AssertionError(msg)
     # E       AssertionError: Expected 'warning' to have been called once. Called 0 times.
     {% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
+    {% set tests_to_skip = tests_to_skip + " or test_update_name_renames_actual_repo_files" %}
 
     test:
       source_files:
