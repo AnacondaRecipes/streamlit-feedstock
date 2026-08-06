@@ -202,6 +202,8 @@ outputs:
       source_files:
         - streamlit_tests/lib/tests
         - streamlit_tests/lib/pyproject.toml
+        - streamlit_tests/scripts/update_name.py
+        - streamlit_tests/lib/streamlit/.agents/skills/developing-with-streamlit/references/api-reference.md
       imports:
         - streamlit
       commands:
