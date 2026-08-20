@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.61.1" %}
+{% set version = "1.62.0" %}
 
 package:
   name: {{ name }}-split
@@ -7,16 +7,16 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 68acf1ff1b6005b19205c2777d832deea0c1edd6fbbf7f43f091b96220e5e35f
+    sha256: 9d2571da6e6799cbaf0f59548f5773926260a87a69807cf3e2f0f68f9f5e4d45
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 87cef575cb6e966feb69102980081558332d8e7537d45d0699a7ff17da031ea1
+    sha256: 0f299636df58d1d9b837293183c2f675273d5ce4cea653f6657c5fed50362dc0
     folder: streamlit_tests
 
 build:
-  number: 1
+  number: 0
   entry_points:
     - streamlit = streamlit.web.cli:main
   skip: true  # [py<310]
@@ -48,7 +48,6 @@ outputs:
         - altair >=5.0.0,<7,!=5.4.0,!=5.4.1
         - blinker >=1.5.0,<2
         - click >=7.0,<9
-        - gitpython >=3.0.7,<4,!=3.1.19
         - numpy >=1.23,<3
         - packaging >=20
         # Pandas <1.4 has a bug related to deleting columns in a DataFrame changing
@@ -60,9 +59,8 @@ outputs:
         - protobuf >=5.26.1,<8
         # PyArrow 25.0.0 can segfault when first imported from a short-lived worker thread.
         # See https://github.com/apache/arrow/issues/50471.
-        - pyarrow >=7.0,<25
+        - pyarrow >=7.0,<26,!=25.0.0
         - requests >=2.27,<3
-        - tenacity >=8.1.0,<10
         # Starting from Python 3.11, Python has built in support for reading TOML files.
         # Let's make sure to remove this "toml" library when we stop supporting Python 3.10.
         - toml >=0.10.1,<2

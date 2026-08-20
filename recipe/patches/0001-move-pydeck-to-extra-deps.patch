@@ -4,13 +4,13 @@ Date: Thu, 5 Feb 2026 09:34:15 +0100
 Subject: [PATCH] move pydeck to extra deps
 
 ---
- lib/pyproject.toml | 7 +++++--
+ pyproject.toml | 7 +++++--
  1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/lib/pyproject.toml b/lib/pyproject.toml
-index ab48bba..c6406d2 100644
---- a/lib/pyproject.toml
-+++ b/lib/pyproject.toml
+diff --git a/pyproject.toml b/pyproject.toml
+index b0621fc..df0ba63 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
 @@ -70,7 +70,6 @@ dependencies = [
    # the index dtype. Pandas 3.x requires Python >= 3.11.
    "pandas>=1.4.0,<4",
@@ -19,7 +19,7 @@ index ab48bba..c6406d2 100644
    # Release builds generate Python protobuf code with protoc 26.1, whose
    # corresponding minimum runtime version is protobuf 5.26.1.
    "protobuf>=5.26.1,<8",
-@@ -122,6 +121,10 @@ auth = [
+@@ -118,6 +117,10 @@ auth = [
    # Required by Authlib's Starlette integration.
    "httpx>=0.24.1",
  ]
@@ -30,7 +30,7 @@ index ab48bba..c6406d2 100644
  # Optional charting dependencies:
  charts = [
    "matplotlib>=3.0.0",
-@@ -141,7 +144,7 @@ performance = [
+@@ -137,7 +140,7 @@ performance = [
  ]
  # Install all optional dependencies:
  all = [
@@ -41,4 +41,3 @@ index ab48bba..c6406d2 100644
  ]
 -- 
 2.39.5 (Apple Git-154)
-
