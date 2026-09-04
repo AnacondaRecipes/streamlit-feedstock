@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.62.0" %}
+{% set version = "1.63.0" %}
 
 package:
   name: {{ name }}-split
@@ -7,12 +7,12 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 9d2571da6e6799cbaf0f59548f5773926260a87a69807cf3e2f0f68f9f5e4d45
+    sha256: 1ea0121884d5606cf055b8c42600528daf07d0401eaabfc8e22f00e235ea53eb
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 0f299636df58d1d9b837293183c2f675273d5ce4cea653f6657c5fed50362dc0
+    sha256: 08813bfab54bca5684acb06e375920d63fc43907644fc0028f94ed8b59da7c82
     folder: streamlit_tests
 
 build:
@@ -46,7 +46,6 @@ outputs:
         # that cause st.line_chart and other built-in charts to fail rendering.
         # See: https://github.com/streamlit/streamlit/issues/12064
         - altair >=5.0.0,<7,!=5.4.0,!=5.4.1
-        - blinker >=1.5.0,<2
         - click >=7.0,<9
         - numpy >=1.23,<3
         - packaging >=20
@@ -69,10 +68,7 @@ outputs:
         # ASGI web-framework. 0.46.0 is the first version exposing
         # `DEFAULT_EXCLUDED_CONTENT_TYPES` from `starlette.middleware.gzip`, which our
         # gzip middleware imports.
-        # Starlette 1.4.0 changed GZipResponder's constructor (added required
-        # thread_minimum_size), which breaks our custom gzip middleware.
-        # See: https://github.com/streamlit/streamlit/issues/16341
-        - starlette >=0.46.0,<1.4.0
+        - starlette >=0.46.0,<2
         # ASGI server:
         - uvicorn >=0.30.0,<1
         # Faster http parsing for Starlette server:
