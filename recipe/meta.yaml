@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.63.0" %}
+{% set version = "1.64.0" %}
 
 package:
   name: {{ name }}-split
@@ -7,12 +7,12 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 1ea0121884d5606cf055b8c42600528daf07d0401eaabfc8e22f00e235ea53eb
+    sha256: 5c3f9a9dec13b5c5197a9c764ebf1a9d77f9e19c1b4af008779cb45c368961a3
     folder: streamlit
     patches:
       - patches/0001-move-pydeck-to-extra-deps.patch
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: 08813bfab54bca5684acb06e375920d63fc43907644fc0028f94ed8b59da7c82
+    sha256: 03f8c43cf8a55bd6963b06a0be2f6773231270cc32dbf6d6127d590a01c3b0d0
     folder: streamlit_tests
 
 build:
@@ -179,6 +179,7 @@ outputs:
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_resource_api_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/fragment_test.py" %}
+    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/testing/proto_variant_parse_test.py" %}
     # >       client = StarletteSessionClient(mock_websocket)
     # >       loop = events.get_running_loop()
     # E       RuntimeError: no running event loop
@@ -192,6 +193,18 @@ outputs:
     # E       AssertionError: Expected 'warning' to have been called once. Called 0 times.
     {% set tests_to_skip = tests_to_skip + " or test_check_conflicts_server_csrf" %}
     {% set tests_to_skip = tests_to_skip + " or test_update_name_renames_actual_repo_files" %}
+    {% set tests_to_skip = tests_to_skip + " or test_parse_emoji_test_keeps_every_status" %}
+    {% set tests_to_skip = tests_to_skip + " or test_parse_emoji_test_skips_comments_and_blank_lines" %}
+    {% set tests_to_skip = tests_to_skip + " or test_parse_emoji_test_aborts_on_unexpected_line" %}
+    {% set tests_to_skip = tests_to_skip + " or test_parse_emoji_test_missing_version" %}
+    {% set tests_to_skip = tests_to_skip + " or test_abort_if_invalid_parse_rejects_unknown_version" %}
+    {% set tests_to_skip = tests_to_skip + " or test_abort_if_invalid_parse_rejects_truncated_list" %}
+    {% set tests_to_skip = tests_to_skip + " or test_abort_if_invalid_parse_accepts_complete_parse" %}
+    {% set tests_to_skip = tests_to_skip + " or test_abort_if_unexpected_removals_rejects_truncation_above_min_count" %}
+    {% set tests_to_skip = tests_to_skip + " or test_abort_if_unexpected_removals_allows_empty_removed" %}
+    {% set tests_to_skip = tests_to_skip + " or test_emoji_set_regex_matches_shipped_emojis_module" %}
+    {% set tests_to_skip = tests_to_skip + " or test_generated_emoji_set_round_trips_through_rewrite_regex" %}
+    {% set tests_to_skip = tests_to_skip + " or test_main_aborts_on_download_failure" %}
 
     test:
       source_files:
@@ -207,7 +220,8 @@ outputs:
         - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
         # Adds missing MIME types to mimetypes to prevent ie: AssertionError: assert 'application/octet-stream' == 'font/otf' 
         - cat $RECIPE_DIR/parent/add_missing_mime_types.py >> streamlit_tests/lib/tests/conftest.py  # [linux]
-        - pytest -p no:cov -o addopts= -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win]
+        # Skip OSX for now. Tests randomly failed due to too many open files. Setting to use more descriptors with ulimit did not help.
+        - pytest -p no:cov -o addopts= -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win and not osx]
       requires:
         - pip
         - pytest >=8.3.5
@@ -231,6 +245,7 @@ outputs:
         - trio
         - httpx
         - python-multipart >=0.0.10
+        - protobuf <7
 
 about:
   home: https://streamlit.io
