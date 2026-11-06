@@ -1,5 +1,5 @@
 {% set name = "streamlit" %}
-{% set version = "1.66.1" %}
+{% set version = "1.67.0" %}
 
 package:
   name: {{ name }}-split
@@ -7,10 +7,10 @@ package:
 
 source:
   - url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-    sha256: 7710a8b67469da7af7bf3503c9b68afca5676f832f62f9bda1221e0ce11941d1
+    sha256: 58159dae1199212250bfa5fbba0740996129003266c2c37d465151ef76c48f3b
     folder: streamlit
   - url: https://github.com/{{ name }}/{{ name }}/archive/{{ version }}.tar.gz
-    sha256: bffc7906f0cc5ea78d4fae0939c028b6427a209c1c5e5e51dd4f79ac63fe1a1f
+    sha256: 53f4e10632c793d383e717914b20e2c3c23ff59c10117b5dc15608c021ea338a
     folder: streamlit_tests
 
 build:
@@ -53,15 +53,16 @@ outputs:
         # Release builds generate Python protobuf code with protoc 26.1, whose
         # corresponding minimum runtime version is protobuf 5.26.1.
         - protobuf >=5.26.1,<8
+        # PyArrow 12.0.0 is the first release whose ChunkedArray.to_pandas()
+        # returns pandas extension columns instead of Arrow storage.
         # PyArrow 25.0.0 can segfault when first imported from a short-lived worker thread.
         # See https://github.com/apache/arrow/issues/50471.
-        - pyarrow >=10.0.1,!=25.0.0,<27
+        - pyarrow >=12.0.0,!=25.0.0,<27
         - requests >=2.27,<3
         # Starlette requires typing-extensions >= 4.10.
         - typing_extensions >=4.10.0,<5
-        # ASGI web-framework. 0.46.0 is the first version exposing
-        # `DEFAULT_EXCLUDED_CONTENT_TYPES` from `starlette.middleware.gzip`, which our
-        # gzip middleware imports.
+        # Starlette 0.46.0 is the first version whose GZipMiddleware
+        # excludes DEFAULT_EXCLUDED_CONTENT_TYPES from compression.
         - starlette >=0.46.0,<2
         # ASGI server:
         - uvicorn >=0.30.0,<1
@@ -75,7 +76,7 @@ outputs:
         - itsdangerous >=2.1.2,<3
         # Don't require watchdog on MacOS, since it'll fail without xcode tools.
         # Without watchdog, we fallback to a polling file watcher to check for app changes.
-        - watchdog >=2.1.5,<7  # [not osx]
+        - watchdog >=2.1.5,<8  # [not osx]
       run_constrained:
         # snowflake
         - snowflake-snowpark-python >=1.17.0
@@ -103,6 +104,7 @@ outputs:
       imports:
         - streamlit
         - streamlit.auth_util
+        - streamlit.byte_util
         - streamlit.column_config
         - streamlit.commands
         - streamlit.components
@@ -155,13 +157,6 @@ outputs:
 
     # The git_util_test.py tests skipped, no need to test git.
     {% set tests_to_ignore = " --ignore=streamlit_tests/lib/tests/streamlit/git_util_test.py" %}
-    # The test fails with RuntimeError: Runtime instance already exists!, which suggests that the server is already running when self.server.start() is called.
-    # The test class may not be properly resetting the environment between tests - setUp() or tearDown() issues.
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/component_request_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/server_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/media_file_handler_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/routes_test.py" %}
-    {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/web/server/upload_file_request_handler_test.py" %}
     # E       Module not found "streamlit[pdf]" (streamlit-pdf not available in main channel)
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/elements/pdf_test.py" %}
     {% set tests_to_ignore = tests_to_ignore + " --ignore=streamlit_tests/lib/tests/streamlit/runtime/caching/cache_data_api_test.py" %}
@@ -195,6 +190,9 @@ outputs:
     {% set tests_to_skip = tests_to_skip + " or test_main_aborts_on_download_failure" %}
     # Requires optional streamlit-pdf, which is not available in the Anaconda main channel.
     {% set tests_to_skip = tests_to_skip + " or test_st_pdf_renders_on_a_second_apptest" %}  # [linux]
+    # Agent description tests fail when running the shared element producers.
+    {% set tests_to_skip = tests_to_skip + " or test_browser_session_builds_and_registers_no_data" %}
+    {% set tests_to_skip = tests_to_skip + " or test_browser_session_sets_no_agent_props" %}
 
     test:
       source_files:
@@ -202,6 +200,9 @@ outputs:
         - streamlit_tests/lib/pyproject.toml
         - streamlit_tests/scripts/update_name.py
         - streamlit_tests/lib/streamlit/.agents/skills/developing-with-streamlit/references/api-reference.md
+        - streamlit_tests/lib/streamlit/.agents/meta-skill/developing-with-streamlit/scripts/discover.py
+        - streamlit_tests/lib/streamlit/.agents/skills/developing-with-streamlit/assets/templates/apps/dashboard-metrics/.streamlit/config.toml
+        - streamlit_tests/lib/streamlit/.agents/skills/developing-with-streamlit/assets/templates/themes/configs/dense-dashboard.toml
       imports:
         - streamlit
       commands:
@@ -214,7 +215,8 @@ outputs:
         - pytest -p no:cov -o addopts= -v -m "not (require_integration or slow or performance)" -k "not ({{ tests_to_skip }})" {{ tests_to_ignore }} streamlit_tests/lib/tests  # [not win and not osx]
       requires:
         - pip
-        - pytest >=8.3.5
+        - pytest >=8.3.5,<9.1.0
+        - coverage
         - parameterized
         - authlib >=1.3.2
         - requests-mock
